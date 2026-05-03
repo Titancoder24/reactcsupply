@@ -3,7 +3,7 @@ import { View, Text, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { tokens } from "@/theme/tokens";
-import { Button, Card, CSupplyLogo, CSupplyMark } from "@/components/ui";
+import { Button, Card, CSupplyLogo, CSupplyMark, CmsImage } from "@/components/ui";
 import { Truck, Check, ArrowRight } from "@/components/ui/Icon";
 
 const HIGHLIGHTS = [
@@ -20,20 +20,23 @@ export default function TransporterWelcome() {
     <View style={{ flex: 1, backgroundColor: tokens.color.surface.page }}>
       <SafeAreaView style={{ flex: 1 }} edges={["top", "bottom"]}>
         <ScrollView contentContainerStyle={{ padding: 20, gap: 20 }}>
-          <View style={{ alignItems: "center", marginTop: 32, gap: 16 }}>
+          <View style={{ alignItems: "center", marginTop: 24, gap: 16 }}>
             <View
               style={{
-                width: 80,
-                height: 80,
-                borderRadius: 24,
-                backgroundColor: tokens.color.brand.green50,
-                alignItems: "center",
-                justifyContent: "center",
+                width: 160,
+                height: 160,
+                borderRadius: 28,
+                overflow: "hidden",
                 borderWidth: 1,
-                borderColor: "rgba(22,163,74,0.2)",
+                borderColor: tokens.color.border.hairline,
               }}
             >
-              <Truck size={40} color={tokens.color.brand.green} />
+              <CmsImage
+                slotKey="transporter.welcome.illustration"
+                width="100%"
+                height="100%"
+                resizeMode="cover"
+              />
             </View>
             <CSupplyLogo size="md" variant="green" />
           </View>

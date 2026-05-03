@@ -3,7 +3,7 @@ import { View, Text, Pressable, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { tokens } from "@/theme/tokens";
-import { Button, Card, CSupplyMark, CSupplyLogo } from "@/components/ui";
+import { Button, Card, CSupplyMark, CSupplyLogo, CmsImage } from "@/components/ui";
 import { ArrowRight, Building, Check } from "@/components/ui/Icon";
 
 const LANGS = [
@@ -28,8 +28,24 @@ export default function VendorWelcome() {
     <View style={{ flex: 1, backgroundColor: tokens.color.surface.page }}>
       <SafeAreaView style={{ flex: 1 }} edges={["top", "bottom"]}>
         <ScrollView contentContainerStyle={{ padding: 20, gap: 20 }}>
-          <View style={{ alignItems: "center", marginTop: 32, gap: 16 }}>
-            <CSupplyMark size={64} variant="green" />
+          <View style={{ alignItems: "center", marginTop: 24, gap: 16 }}>
+            <View
+              style={{
+                width: 160,
+                height: 160,
+                borderRadius: 28,
+                overflow: "hidden",
+                borderWidth: 1,
+                borderColor: tokens.color.border.hairline,
+              }}
+            >
+              <CmsImage
+                slotKey="vendor.welcome.illustration"
+                width="100%"
+                height="100%"
+                resizeMode="cover"
+              />
+            </View>
             <CSupplyLogo size="md" variant="green" />
           </View>
 

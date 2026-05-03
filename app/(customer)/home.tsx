@@ -3,7 +3,7 @@ import { View, Text, ScrollView, Pressable, Image, TextInput } from "react-nativ
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { tokens } from "@/theme/tokens";
-import { Card, SectionLabel, StatusPill, Avatar } from "@/components/ui";
+import { Card, SectionLabel, StatusPill, Avatar, CmsImage } from "@/components/ui";
 import {
   Bell,
   MapPin,
@@ -287,8 +287,47 @@ export default function CustomerHomeScreen() {
                     <ArrowRight size={14} color="#fff" />
                   </View>
                 </View>
+
+                {/* CMS-driven hero imagery */}
+                <View
+                  style={{
+                    width: 120,
+                    height: 120,
+                    borderRadius: 16,
+                    overflow: "hidden",
+                    marginLeft: 12,
+                    borderWidth: 1,
+                    borderColor: "rgba(255,255,255,0.18)",
+                  }}
+                >
+                  <CmsImage
+                    slotKey="customer.home.hero"
+                    width="100%"
+                    height="100%"
+                    resizeMode="cover"
+                  />
+                </View>
               </View>
             </Pressable>
+          </View>
+
+          {/* CMS banner */}
+          <View style={{ paddingHorizontal: 20, marginTop: 16 }}>
+            <View
+              style={{
+                borderRadius: 16,
+                overflow: "hidden",
+                borderWidth: 1,
+                borderColor: tokens.color.border.hairline,
+              }}
+            >
+              <CmsImage
+                slotKey="customer.home.banner.1"
+                width="100%"
+                height={140}
+                resizeMode="cover"
+              />
+            </View>
           </View>
 
           {/* Trust strip */}

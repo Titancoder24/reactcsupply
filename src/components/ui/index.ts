@@ -15,4 +15,5 @@ export { Divider } from "./Divider";
 export { EmptyState } from "./EmptyState";
 export { Stat } from "./Stat";
 export { Markdown } from "./Markdown";
+export { CmsImage } from "./CmsImage";
 export * as Icons from "./Icon";

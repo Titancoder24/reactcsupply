@@ -85,6 +85,72 @@ export default function SuperAdminDashboard() {
             </View>
           </Card>
 
+          {/* CMS shortcut */}
+          <Pressable
+            onPress={() => router.push("/(admin)/cms")}
+            style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}
+          >
+            <Card
+              padded={18}
+              style={{
+                borderColor: tokens.color.customer.tint,
+                backgroundColor: tokens.color.customer.tint,
+              }}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 14 }}>
+                <View
+                  style={{
+                    width: 44,
+                    height: 44,
+                    borderRadius: 12,
+                    backgroundColor: "#fff",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Tag size={22} color={tokens.color.customer.primary} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text
+                    style={{
+                      fontFamily: tokens.font.family.body,
+                      fontSize: 11,
+                      fontWeight: "600",
+                      color: tokens.color.customer.primary,
+                      letterSpacing: 0.6,
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    Content
+                  </Text>
+                  <Text
+                    style={{
+                      marginTop: 2,
+                      fontFamily: tokens.font.family.display,
+                      fontWeight: "700",
+                      fontSize: 16,
+                      color: tokens.color.ink[900],
+                      letterSpacing: -0.3,
+                    }}
+                  >
+                    Open CMS Studio
+                  </Text>
+                  <Text
+                    style={{
+                      marginTop: 2,
+                      fontFamily: tokens.font.family.body,
+                      fontSize: 12,
+                      color: tokens.color.ink[600],
+                    }}
+                  >
+                    Media library · image slots · categories · banners across every surface
+                  </Text>
+                </View>
+                <ArrowRight size={18} color={tokens.color.ink[600]} />
+              </View>
+            </Card>
+          </Pressable>
+
           {/* Compliance shortcut */}
           <Pressable
             onPress={() => router.push("/(admin)/compliance")}
