@@ -85,6 +85,72 @@ export default function SuperAdminDashboard() {
             </View>
           </Card>
 
+          {/* Compliance shortcut */}
+          <Pressable
+            onPress={() => router.push("/(admin)/compliance")}
+            style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}
+          >
+            <Card
+              padded={18}
+              style={{
+                borderColor: "rgba(22,163,74,0.2)",
+                backgroundColor: tokens.color.brand.green50,
+              }}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 14 }}>
+                <View
+                  style={{
+                    width: 44,
+                    height: 44,
+                    borderRadius: 12,
+                    backgroundColor: "#fff",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Shield size={22} color={tokens.color.brand.green} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text
+                    style={{
+                      fontFamily: tokens.font.family.body,
+                      fontSize: 11,
+                      fontWeight: "600",
+                      color: tokens.color.brand.green600,
+                      letterSpacing: 0.6,
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    Compliance
+                  </Text>
+                  <Text
+                    style={{
+                      marginTop: 2,
+                      fontFamily: tokens.font.family.display,
+                      fontWeight: "700",
+                      fontSize: 16,
+                      color: tokens.color.ink[900],
+                      letterSpacing: -0.3,
+                    }}
+                  >
+                    Open Compliance Console
+                  </Text>
+                  <Text
+                    style={{
+                      marginTop: 2,
+                      fontFamily: tokens.font.family.body,
+                      fontSize: 12,
+                      color: tokens.color.ink[600],
+                    }}
+                  >
+                    Legal docs · DSR · Grievances · Privacy manifest · App + Play submission
+                  </Text>
+                </View>
+                <ArrowRight size={18} color={tokens.color.ink[600]} />
+              </View>
+            </Card>
+          </Pressable>
+
           {/* Theme editor */}
           <View style={{ gap: 12 }}>
             <SectionLabel

@@ -14,4 +14,5 @@ export { ListItem } from "./ListItem";
 export { Divider } from "./Divider";
 export { EmptyState } from "./EmptyState";
 export { Stat } from "./Stat";
+export { Markdown } from "./Markdown";
 export * as Icons from "./Icon";

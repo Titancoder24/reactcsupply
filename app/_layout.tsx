@@ -22,13 +22,15 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <QueryClientProvider client={queryClient}>
           <StatusBar style="dark" />
-          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: "#F8FAFC" } }}>
+          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: "#F6F7FB" } }}>
             <Stack.Screen name="index" />
             <Stack.Screen name="auth" />
             <Stack.Screen name="(customer)" />
             <Stack.Screen name="(vendor)" />
             <Stack.Screen name="(transporter)" />
             <Stack.Screen name="(admin)" />
+            <Stack.Screen name="legal" />
+            <Stack.Screen name="account" />
             <Stack.Screen name="category/[slug]" />
             <Stack.Screen name="product/[slug]" />
           </Stack>

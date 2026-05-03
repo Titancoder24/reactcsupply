@@ -15,40 +15,77 @@ import {
   Package,
 } from "@/components/ui/Icon";
 
-const MENU_GROUPS = [
-  {
-    label: "Account",
-    items: [
-      { icon: User, label: "Personal information", subtitle: "Name, phone, email" },
-      { icon: Tag, label: "Saved addresses", subtitle: "2 addresses" },
-      { icon: Tag, label: "GST details", subtitle: "33ABCDE1234F1Z5" },
-    ],
-  },
-  {
-    label: "Activity",
-    items: [
-      { icon: Package, label: "Order history" },
-      { icon: Bell, label: "Notifications", subtitle: "Email, push, SMS" },
-    ],
-  },
-  {
-    label: "Security",
-    items: [
-      { icon: Lock, label: "Change passcode" },
-      { icon: Shield, label: "Privacy & data" },
-    ],
-  },
-  {
-    label: "Support",
-    items: [
-      { icon: Headphones, label: "Help & support" },
-      { icon: Settings, label: "App settings" },
-    ],
-  },
-];
-
 export default function AccountScreen() {
   const router = useRouter();
+
+  const groups = [
+    {
+      label: "Account",
+      items: [
+        { icon: User, label: "Personal information", subtitle: "Name, phone, email" },
+        { icon: Tag, label: "Saved addresses", subtitle: "2 addresses" },
+        { icon: Tag, label: "GST details", subtitle: "33ABCDE1234F1Z5" },
+      ],
+    },
+    {
+      label: "Activity",
+      items: [
+        { icon: Package, label: "Order history" },
+        {
+          icon: Bell,
+          label: "Notifications",
+          subtitle: "Email, push, SMS",
+          onPress: () => router.push("/account/consents"),
+        },
+      ],
+    },
+    {
+      label: "Privacy & data",
+      items: [
+        {
+          icon: Shield,
+          label: "Manage your data",
+          subtitle: "Access, export, correct, restrict",
+          onPress: () => router.push("/account/data-rights"),
+        },
+        {
+          icon: Lock,
+          label: "Consent center",
+          subtitle: "Marketing, analytics, location",
+          onPress: () => router.push("/account/consents"),
+        },
+        {
+          icon: Settings,
+          label: "Legal & policies",
+          subtitle: "Privacy, terms, refund, more",
+          onPress: () => router.push("/legal"),
+        },
+        {
+          icon: Shield,
+          label: "Delete account",
+          subtitle: "Permanent · 30-day cool-off",
+          onPress: () => router.push("/account/delete"),
+          destructive: true,
+        },
+      ],
+    },
+    {
+      label: "Support",
+      items: [
+        {
+          icon: Headphones,
+          label: "Help & support",
+          subtitle: "support@csupply.in",
+        },
+        {
+          icon: Headphones,
+          label: "Raise a grievance",
+          subtitle: "Officer responds within 24 hours",
+          onPress: () => router.push("/account/grievance"),
+        },
+      ],
+    },
+  ] as const;
 
   return (
     <View style={{ flex: 1, backgroundColor: tokens.color.surface.page }}>
@@ -90,17 +127,28 @@ export default function AccountScreen() {
             </View>
           </Card>
 
-          {MENU_GROUPS.map((group) => (
+          {groups.map((group) => (
             <View key={group.label} style={{ gap: 8 }}>
               <SectionLabel label={group.label} caps size="sm" />
               <Card padded={false}>
-                {group.items.map((item, idx) => (
+                {group.items.map((item: any, idx: number) => (
                   <ListItem
                     key={item.label}
-                    icon={<item.icon size={18} color={tokens.color.customer.primary} />}
+                    icon={
+                      <item.icon
+                        size={18}
+                        color={
+                          item.destructive
+                            ? tokens.color.state.danger
+                            : tokens.color.customer.primary
+                        }
+                      />
+                    }
                     title={item.label}
-                    subtitle={(item as any).subtitle}
+                    subtitle={item.subtitle}
                     divider={idx > 0}
+                    destructive={item.destructive}
+                    onPress={item.onPress}
                   />
                 ))}
               </Card>
@@ -138,7 +186,7 @@ export default function AccountScreen() {
                 color: tokens.color.ink[400],
               }}
             >
-              C-Supply v1.0.0
+              C-Supply v1.0.0 · DPDPA-compliant
             </Text>
           </View>
         </ScrollView>
