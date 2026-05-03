@@ -3,8 +3,8 @@ import { View, Text, ScrollView, Pressable, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { tokens } from "@/theme/tokens";
-import { Button, Card, FilterPill, Header } from "@/components/ui";
-import { Search, Filter } from "@/components/ui/Icon";
+import { Button, Card, FilterPill, Header, StatusPill } from "@/components/ui";
+import { Search, Filter, Star } from "@/components/ui/Icon";
 import { useProducts } from "@/hooks/use-catalog";
 import { formatINR } from "@/lib/utils";
 import { useCartStore } from "@/stores/cart-store";
@@ -25,17 +25,38 @@ export default function CategoryScreen() {
     .join(" ");
 
   return (
-    <View style={{ flex: 1, backgroundColor: tokens.color.surface.light }}>
+    <View style={{ flex: 1, backgroundColor: tokens.color.surface.page }}>
       <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
         <Header
           title={title}
+          subtitle={`${products.length} products available`}
           rightActions={
             <>
-              <Pressable hitSlop={8}>
-                <Search size={22} color={tokens.color.text.dark} />
+              <Pressable
+                hitSlop={6}
+                style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: 10,
+                  backgroundColor: tokens.color.ink[50],
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Search size={18} color={tokens.color.ink[800]} />
               </Pressable>
-              <Pressable hitSlop={8}>
-                <Filter size={22} color={tokens.color.text.dark} />
+              <Pressable
+                hitSlop={6}
+                style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: 10,
+                  backgroundColor: tokens.color.ink[50],
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Filter size={18} color={tokens.color.ink[800]} />
               </Pressable>
             </>
           }
@@ -45,7 +66,7 @@ export default function CategoryScreen() {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 20, paddingVertical: 12, gap: 12 }}
+          contentContainerStyle={{ paddingHorizontal: 20, paddingVertical: 14, gap: 8 }}
         >
           {FILTERS.map((f) => (
             <FilterPill
@@ -58,24 +79,30 @@ export default function CategoryScreen() {
           ))}
         </ScrollView>
 
-        <ScrollView contentContainerStyle={{ padding: 20, paddingTop: 0, gap: 16 }}>
+        <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 32, gap: 12 }}>
           {isLoading && (
-            <Text style={{ fontFamily: "Poppins", color: tokens.color.text.muted, textAlign: "center", padding: 24 }}>
+            <Text
+              style={{
+                fontFamily: tokens.font.family.body,
+                color: tokens.color.ink[500],
+                textAlign: "center",
+                padding: 24,
+              }}
+            >
               Loading products...
             </Text>
           )}
 
           {products.map((p) => (
-            <Card key={p.id} elevated padded={false} style={{ overflow: "hidden" }}>
-              <View style={{ flexDirection: "row" }}>
+            <Card key={p.id} padded={false} elevation="xs">
+              <View style={{ flexDirection: "row", padding: 12, gap: 12 }}>
                 <Pressable
                   onPress={() => router.push(`/product/${p.slug}`)}
                   style={{
-                    width: 96,
-                    height: 96,
-                    margin: 12,
-                    borderRadius: 8,
-                    backgroundColor: tokens.color.surface.light,
+                    width: 100,
+                    height: 100,
+                    borderRadius: 12,
+                    backgroundColor: tokens.color.ink[50],
                     overflow: "hidden",
                   }}
                 >
@@ -88,57 +115,104 @@ export default function CategoryScreen() {
                   )}
                 </Pressable>
 
-                <View style={{ flex: 1, padding: 12, paddingLeft: 0, justifyContent: "space-between" }}>
+                <View style={{ flex: 1, justifyContent: "space-between" }}>
                   <View>
+                    <Text
+                      style={{
+                        fontFamily: tokens.font.family.body,
+                        fontSize: 10,
+                        fontWeight: "600",
+                        color: tokens.color.ink[500],
+                        letterSpacing: 0.6,
+                        textTransform: "uppercase",
+                      }}
+                    >
+                      {p.brand ?? "C-Supply"}
+                    </Text>
                     <Pressable onPress={() => router.push(`/product/${p.slug}`)}>
                       <Text
                         numberOfLines={2}
                         style={{
+                          marginTop: 2,
+                          fontFamily: tokens.font.family.display,
                           fontSize: 14,
-                          fontFamily: "Poppins",
                           fontWeight: "600",
-                          color: tokens.color.text.dark,
+                          color: tokens.color.ink[900],
                           lineHeight: 18,
+                          letterSpacing: -0.2,
                         }}
                       >
                         {p.name}
                       </Text>
                     </Pressable>
-                    <Text
-                      style={{
-                        fontSize: 12,
-                        fontFamily: "Poppins",
-                        color: tokens.color.text.muted,
-                        marginTop: 2,
-                      }}
-                    >
-                      50 kg
-                    </Text>
-                    <Text
-                      style={{
-                        fontSize: 14,
-                        fontFamily: "Poppins",
-                        fontWeight: "600",
-                        color: tokens.color.text.dark,
-                        marginTop: 6,
-                      }}
-                    >
-                      {formatINR(Number(p.base_price))}{" "}
-                      <Text style={{ fontWeight: "400", color: tokens.color.text.muted, fontSize: 12 }}>
-                        / {p.unit.toLowerCase()}
+
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginTop: 4 }}>
+                      <Star size={11} color={tokens.color.star} />
+                      <Text
+                        style={{
+                          fontFamily: tokens.font.family.mono,
+                          fontSize: 11,
+                          fontWeight: "600",
+                          color: tokens.color.ink[700],
+                        }}
+                      >
+                        {Number(p.rating).toFixed(1)}
                       </Text>
-                    </Text>
+                      <Text
+                        style={{
+                          fontFamily: tokens.font.family.body,
+                          fontSize: 11,
+                          color: tokens.color.ink[500],
+                        }}
+                      >
+                        · 50 kg
+                      </Text>
+                      <View style={{ marginLeft: 4 }}>
+                        <StatusPill label="In stock" tone="success" size="xs" />
+                      </View>
+                    </View>
                   </View>
 
-                  <View style={{ marginTop: 8 }}>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      marginTop: 8,
+                    }}
+                  >
+                    <View style={{ flexDirection: "row", alignItems: "baseline", gap: 4 }}>
+                      <Text
+                        style={{
+                          fontFamily: tokens.font.family.display,
+                          fontSize: 18,
+                          fontWeight: "700",
+                          color: tokens.color.ink[900],
+                          letterSpacing: -0.4,
+                        }}
+                      >
+                        {formatINR(Number(p.base_price))}
+                      </Text>
+                      <Text
+                        style={{
+                          fontFamily: tokens.font.family.body,
+                          fontSize: 11,
+                          color: tokens.color.ink[500],
+                        }}
+                      >
+                        / {p.unit.toLowerCase()}
+                      </Text>
+                    </View>
                     <Button
-                      label="Add to Cart"
+                      label="Add"
                       size="sm"
                       surface="customer"
+                      fullWidth={false}
                       onPress={() =>
                         add({
                           productId: p.id,
                           name: p.name,
+                          brand: p.brand ?? undefined,
                           unit: p.unit,
                           unitPrice: Number(p.base_price),
                           qty: 1,

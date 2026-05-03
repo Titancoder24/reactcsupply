@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView } from "react-native";
+import { View, Text, ScrollView, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { tokens } from "@/theme/tokens";
-import { Button, Card, Header, Input, OtpInput } from "@/components/ui";
-import { Lock, Shield } from "@/components/ui/Icon";
+import { Button, Card, Header, Input, OtpInput, CSupplyMark } from "@/components/ui";
+import { Shield, ArrowRight } from "@/components/ui/Icon";
 
 export default function AdminLogin() {
   const router = useRouter();
@@ -14,52 +14,44 @@ export default function AdminLogin() {
   const [stage, setStage] = useState<"login" | "totp">("login");
 
   return (
-    <View style={{ flex: 1, backgroundColor: tokens.color.surface.light }}>
+    <View style={{ flex: 1, backgroundColor: tokens.color.surface.page }}>
       <SafeAreaView style={{ flex: 1 }} edges={["top", "bottom"]}>
-        <Header title="Admin Login" />
+        <Header title="Admin sign in" variant="ghost" />
         <ScrollView contentContainerStyle={{ padding: 20, gap: 20 }}>
-          <Card style={{ alignItems: "center", paddingVertical: 32 }}>
-            <View
-              style={{
-                width: 64,
-                height: 64,
-                borderRadius: 32,
-                backgroundColor: tokens.color.state.infoBg,
-                alignItems: "center",
-                justifyContent: "center",
-                marginBottom: 16,
-              }}
-            >
-              <Shield size={32} color={tokens.color.customer.primary} />
-            </View>
+          <View style={{ alignItems: "center", marginTop: 8, marginBottom: 8 }}>
+            <CSupplyMark size={56} variant="mono" />
             <Text
               style={{
-                fontFamily: "Poppins",
-                fontWeight: "600",
-                fontSize: 22,
-                color: tokens.color.text.primary,
+                marginTop: 18,
+                fontFamily: tokens.font.family.display,
+                fontWeight: "700",
+                fontSize: 24,
+                color: tokens.color.ink[900],
+                letterSpacing: -0.5,
               }}
             >
-              {stage === "login" ? "Sign in to Admin" : "Two-factor authentication"}
+              {stage === "login" ? "Admin console" : "Two-factor verification"}
             </Text>
             <Text
               style={{
-                fontFamily: "Poppins",
+                marginTop: 6,
+                fontFamily: tokens.font.family.body,
                 fontSize: 14,
-                color: tokens.color.text.secondary,
-                marginBottom: 24,
-                marginTop: 4,
+                color: tokens.color.ink[500],
                 textAlign: "center",
+                maxWidth: 320,
               }}
             >
               {stage === "login"
-                ? "Use your platform credentials"
-                : "Enter the 6-digit code from your authenticator app"}
+                ? "Use your platform credentials to continue."
+                : "Enter the 6-digit code from your authenticator app."}
             </Text>
+          </View>
 
+          <Card padded={20}>
             {stage === "login" ? (
-              <View style={{ width: "100%", gap: 12 }}>
-                <Input label="Email" value={email} onChangeText={setEmail} placeholder="admin@demo.csupply.in" />
+              <View style={{ gap: 12 }}>
+                <Input label="Email" value={email} onChangeText={setEmail} placeholder="admin@example.com" />
                 <Input
                   label="Password"
                   value={password}
@@ -68,28 +60,44 @@ export default function AdminLogin() {
                   secureTextEntry
                 />
                 <View style={{ height: 8 }} />
-                <Button label="Continue" onPress={() => setStage("totp")} />
+                <Button
+                  label="Continue"
+                  onPress={() => setStage("totp")}
+                  iconRight={<ArrowRight size={18} color="#fff" />}
+                />
               </View>
             ) : (
-              <View style={{ width: "100%", gap: 12 }}>
-                <OtpInput value={totp} onChange={setTotp} length={6} />
-                <View style={{ height: 8 }} />
-                <Button
-                  label="Verify & Sign In"
-                  onPress={() => {
-                    if (email.includes("super")) {
-                      router.replace("/(admin)/super-dashboard");
-                    } else {
-                      router.replace("/(admin)/dashboard");
-                    }
+              <View style={{ gap: 12, alignItems: "center" }}>
+                <View
+                  style={{
+                    width: 56,
+                    height: 56,
+                    borderRadius: 16,
+                    backgroundColor: tokens.color.bgKpi.blue,
+                    alignItems: "center",
+                    justifyContent: "center",
                   }}
-                  disabled={totp.length !== 6}
-                />
+                >
+                  <Shield size={28} color={tokens.color.customer.primary} />
+                </View>
+                <OtpInput value={totp} onChange={setTotp} length={6} cellSize={48} />
+                <View style={{ height: 8 }} />
+                <View style={{ width: "100%" }}>
+                  <Button
+                    label="Verify & sign in"
+                    onPress={() => {
+                      if (email.includes("super")) router.replace("/(admin)/super-dashboard");
+                      else router.replace("/(admin)/dashboard");
+                    }}
+                    disabled={totp.length !== 6}
+                    iconRight={<ArrowRight size={18} color="#fff" />}
+                  />
+                </View>
                 <Text
                   style={{
-                    fontFamily: "Poppins",
+                    fontFamily: tokens.font.family.body,
                     fontSize: 12,
-                    color: tokens.color.text.muted,
+                    color: tokens.color.ink[500],
                     textAlign: "center",
                   }}
                 >
@@ -99,24 +107,81 @@ export default function AdminLogin() {
             )}
           </Card>
 
-          <Card>
-            <Text
-              style={{
-                fontFamily: "Poppins",
-                fontWeight: "600",
-                fontSize: 13,
-                color: tokens.color.text.dark,
-                marginBottom: 8,
-              }}
-            >
-              Demo Admins
-            </Text>
-            <Text style={{ fontFamily: "Poppins", fontSize: 13, color: tokens.color.text.muted, marginBottom: 4 }}>
-              admin@demo.csupply.in · Demo@2026 (Admin)
-            </Text>
-            <Text style={{ fontFamily: "Poppins", fontSize: 13, color: tokens.color.text.muted }}>
-              superadmin@demo.csupply.in · Demo@2026 (Super Admin)
-            </Text>
+          <Card tone="subtle" elevation="none" padded={16}>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 8 }}>
+              <View
+                style={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: 3,
+                  backgroundColor: tokens.color.state.success,
+                }}
+              />
+              <Text
+                style={{
+                  fontFamily: tokens.font.family.body,
+                  fontWeight: "600",
+                  fontSize: 11,
+                  color: tokens.color.ink[600],
+                  letterSpacing: 0.6,
+                  textTransform: "uppercase",
+                }}
+              >
+                Demo accounts
+              </Text>
+            </View>
+            <View style={{ gap: 6 }}>
+              {[
+                { role: "Admin", email: "admin@demo.csupply.in" },
+                { role: "Super Admin", email: "superadmin@demo.csupply.in" },
+              ].map((d, idx) => (
+                <Pressable
+                  key={d.role}
+                  onPress={() => setEmail(d.email)}
+                  style={({ pressed }) => ({
+                    paddingVertical: 8,
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    borderTopWidth: idx > 0 ? 1 : 0,
+                    borderTopColor: tokens.color.border.hairline,
+                    opacity: pressed ? 0.6 : 1,
+                  })}
+                >
+                  <Text
+                    style={{
+                      fontFamily: tokens.font.family.body,
+                      fontSize: 13,
+                      fontWeight: "500",
+                      color: tokens.color.ink[800],
+                    }}
+                  >
+                    {d.role}
+                  </Text>
+                  <Text
+                    style={{
+                      fontFamily: tokens.font.family.mono,
+                      fontSize: 12,
+                      color: tokens.color.ink[600],
+                    }}
+                  >
+                    {d.email}
+                  </Text>
+                </Pressable>
+              ))}
+              <Text
+                style={{
+                  marginTop: 4,
+                  fontFamily: tokens.font.family.body,
+                  fontSize: 11,
+                  color: tokens.color.ink[500],
+                }}
+              >
+                Password ·{" "}
+                <Text style={{ fontFamily: tokens.font.family.mono, color: tokens.color.ink[800] }}>
+                  Demo@2026
+                </Text>
+              </Text>
+            </View>
           </Card>
         </ScrollView>
       </SafeAreaView>

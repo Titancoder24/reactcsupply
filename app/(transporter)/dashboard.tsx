@@ -3,8 +3,17 @@ import { View, Text, ScrollView, Pressable, Switch } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { tokens } from "@/theme/tokens";
-import { Card, Button } from "@/components/ui";
-import { Truck, MapPin, Bell, Package, User, Headphones, ChevronRight, Clock } from "@/components/ui/Icon";
+import { Avatar, Button, Card, KpiCard, ListItem, SectionLabel, StatusPill } from "@/components/ui";
+import {
+  Truck,
+  Bell,
+  Package,
+  User,
+  Headphones,
+  Clock,
+  Shield,
+  ArrowRight,
+} from "@/components/ui/Icon";
 import { formatINR } from "@/lib/utils";
 
 export default function TransporterDashboard() {
@@ -12,61 +21,113 @@ export default function TransporterDashboard() {
   const [available, setAvailable] = useState(true);
 
   return (
-    <View style={{ flex: 1, backgroundColor: tokens.color.surface.softBg }}>
+    <View style={{ flex: 1, backgroundColor: tokens.color.surface.page }}>
       <SafeAreaView style={{ flex: 1 }} edges={["top", "bottom"]}>
         <ScrollView contentContainerStyle={{ paddingBottom: 32 }}>
           {/* Header */}
           <View
             style={{
               padding: 20,
-              backgroundColor: "#fff",
+              backgroundColor: tokens.color.surface.white,
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "space-between",
               borderBottomWidth: 1,
-              borderBottomColor: tokens.color.border.divider,
+              borderBottomColor: tokens.color.border.hairline,
             }}
           >
             <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
-              <View
-                style={{
-                  width: 44,
-                  height: 44,
-                  borderRadius: 22,
-                  backgroundColor: tokens.color.brand.green,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Text style={{ color: "#fff", fontFamily: "Poppins", fontWeight: "700", fontSize: 18 }}>S</Text>
-              </View>
+              <Avatar name="Suresh Reddy" size={42} tone="green" showStatus />
               <View>
-                <Text style={{ fontFamily: "Poppins", fontSize: 12, color: tokens.color.text.secondary }}>Welcome,</Text>
-                <Text style={{ fontFamily: "Poppins", fontWeight: "600", fontSize: 16, color: tokens.color.text.primary }}>
+                <Text
+                  style={{
+                    fontFamily: tokens.font.family.body,
+                    fontSize: 11,
+                    fontWeight: "600",
+                    color: tokens.color.ink[500],
+                    letterSpacing: 0.5,
+                    textTransform: "uppercase",
+                  }}
+                >
+                  Driver
+                </Text>
+                <Text
+                  style={{
+                    fontFamily: tokens.font.family.display,
+                    fontWeight: "700",
+                    fontSize: 17,
+                    color: tokens.color.ink[900],
+                    letterSpacing: -0.3,
+                  }}
+                >
                   Suresh Reddy
                 </Text>
               </View>
             </View>
-            <Bell size={24} color={tokens.color.text.primary} />
+            <Pressable
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: 12,
+                backgroundColor: tokens.color.ink[50],
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Bell size={18} color={tokens.color.ink[800]} />
+            </Pressable>
           </View>
 
-          {/* Availability toggle */}
-          <View style={{ padding: 20 }}>
-            <Card>
+          <View style={{ padding: 20, gap: 22 }}>
+            {/* Availability card */}
+            <Card padded={18}>
               <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-                <View>
+                <View style={{ flex: 1 }}>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                    <View
+                      style={{
+                        width: 8,
+                        height: 8,
+                        borderRadius: 4,
+                        backgroundColor: available ? tokens.color.state.success : tokens.color.ink[400],
+                      }}
+                    />
+                    <Text
+                      style={{
+                        fontFamily: tokens.font.family.body,
+                        fontWeight: "600",
+                        fontSize: 11,
+                        color: available ? tokens.color.state.successText : tokens.color.ink[500],
+                        letterSpacing: 0.5,
+                        textTransform: "uppercase",
+                      }}
+                    >
+                      {available ? "Online" : "Offline"}
+                    </Text>
+                  </View>
                   <Text
                     style={{
-                      fontFamily: "Poppins",
-                      fontWeight: "600",
-                      fontSize: 16,
-                      color: tokens.color.text.primary,
+                      marginTop: 6,
+                      fontFamily: tokens.font.family.display,
+                      fontWeight: "700",
+                      fontSize: 18,
+                      color: tokens.color.ink[900],
+                      letterSpacing: -0.3,
                     }}
                   >
-                    Available for Jobs
+                    {available ? "Receiving job offers" : "Not accepting jobs"}
                   </Text>
-                  <Text style={{ fontFamily: "Poppins", fontSize: 12, color: tokens.color.text.secondary }}>
-                    {available ? "Online — receiving requests" : "Offline"}
+                  <Text
+                    style={{
+                      marginTop: 2,
+                      fontFamily: tokens.font.family.body,
+                      fontSize: 13,
+                      color: tokens.color.ink[500],
+                    }}
+                  >
+                    {available
+                      ? "We'll notify you when a job matches your vehicle."
+                      : "Toggle on to start receiving requests."}
                   </Text>
                 </View>
                 <Switch
@@ -78,127 +139,155 @@ export default function TransporterDashboard() {
               </View>
             </Card>
 
-            {/* KPI */}
-            <View style={{ flexDirection: "row", gap: 12, marginTop: 16 }}>
-              <Card style={{ flex: 1, backgroundColor: tokens.color.bgKpi.green, elevation: 0, shadowOpacity: 0 }} elevated={false}>
-                <Text style={{ fontFamily: "Poppins", fontSize: 12, color: tokens.color.text.secondary }}>Today Trips</Text>
+            {/* KPIs */}
+            <View style={{ flexDirection: "row", gap: 10 }}>
+              <KpiCard
+                label="Today trips"
+                value="04"
+                delta={{ value: "+1", trend: "up" }}
+                tone="green"
+                fullWidth
+              />
+              <KpiCard
+                label="This week"
+                value={formatINR(18200)}
+                delta={{ value: "+22%", trend: "up" }}
+                tone="purple"
+                fullWidth
+              />
+            </View>
+
+            {/* Demo simulator */}
+            <View style={{ gap: 12 }}>
+              <SectionLabel label="Demo simulator" />
+              <Card padded={16}>
                 <Text
                   style={{
-                    fontFamily: "Poppins",
-                    fontWeight: "700",
-                    fontSize: 24,
-                    color: tokens.color.text.primary,
-                    marginTop: 4,
+                    fontFamily: tokens.font.family.body,
+                    fontSize: 13,
+                    color: tokens.color.ink[600],
+                    lineHeight: 20,
                   }}
                 >
-                  04
+                  Walk through the operating loop end-to-end.
                 </Text>
-              </Card>
-              <Card style={{ flex: 1, backgroundColor: tokens.color.bgKpi.purple, elevation: 0, shadowOpacity: 0 }} elevated={false}>
-                <Text style={{ fontFamily: "Poppins", fontSize: 12, color: tokens.color.text.secondary }}>This Week</Text>
-                <Text
-                  style={{
-                    fontFamily: "Poppins",
-                    fontWeight: "700",
-                    fontSize: 24,
-                    color: tokens.color.text.primary,
-                    marginTop: 4,
-                  }}
-                >
-                  {formatINR(18200)}
-                </Text>
+                <View style={{ height: 12 }} />
+                <View style={{ gap: 8 }}>
+                  <Button
+                    label="Simulate incoming job"
+                    onPress={() => router.push("/(transporter)/job-request")}
+                    surface="transporter"
+                    iconRight={<ArrowRight size={16} color="#fff" />}
+                  />
+                  <View style={{ flexDirection: "row", gap: 8 }}>
+                    <View style={{ flex: 1 }}>
+                      <Button
+                        label="Live tracking"
+                        variant="secondary"
+                        onPress={() => router.push("/(transporter)/tracking")}
+                        size="md"
+                      />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Button
+                        label="Delivery proof"
+                        variant="secondary"
+                        onPress={() => router.push("/(transporter)/proof")}
+                        size="md"
+                      />
+                    </View>
+                  </View>
+                </View>
               </Card>
             </View>
 
-            {/* Demo: open a fake job */}
-            <View style={{ marginTop: 24 }}>
-              <Text
-                style={{
-                  fontFamily: "Poppins",
-                  fontWeight: "600",
-                  fontSize: 16,
-                  color: tokens.color.text.primary,
-                  marginBottom: 12,
-                }}
-              >
-                Demo Actions
-              </Text>
-              <View style={{ gap: 12 }}>
-                <Button
-                  label="Simulate Incoming Job Request"
-                  onPress={() => router.push("/(transporter)/job-request")}
-                  surface="transporter"
-                />
-                <Button
-                  label="View Live Tracking"
-                  variant="secondary"
-                  onPress={() => router.push("/(transporter)/tracking")}
-                  surface="transporter"
-                />
-                <Button
-                  label="Delivery & Proof"
-                  variant="secondary"
-                  onPress={() => router.push("/(transporter)/proof")}
-                  surface="transporter"
-                />
-              </View>
-            </View>
-
-            {/* Menu */}
-            <Text
-              style={{
-                fontFamily: "Poppins",
-                fontWeight: "600",
-                fontSize: 16,
-                color: tokens.color.text.primary,
-                marginTop: 24,
-                marginBottom: 12,
-              }}
-            >
-              Account
-            </Text>
-            <Card padded={false}>
-              {[
-                { label: "My Profile", Icon: User },
-                { label: "Vehicles", Icon: Truck },
-                { label: "Documents", Icon: Package },
-                { label: "Earnings", Icon: Clock },
-                { label: "Support & Help", Icon: Headphones },
-              ].map((it, idx) => (
-                <Pressable
-                  key={it.label}
+            {/* Verification + vehicles summary */}
+            <View style={{ gap: 12 }}>
+              <SectionLabel label="Operations" />
+              <Card padded={false}>
+                <View
                   style={{
-                    flexDirection: "row",
-                    alignItems: "center",
                     paddingHorizontal: 16,
                     paddingVertical: 14,
-                    gap: 12,
-                    borderTopWidth: idx > 0 ? 1 : 0,
-                    borderTopColor: tokens.color.border.divider,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 14,
                   }}
                 >
-                  <it.Icon size={20} color={tokens.color.brand.green} />
-                  <Text style={{ flex: 1, fontFamily: "Poppins", fontSize: 14, color: tokens.color.text.primary }}>
-                    {it.label}
-                  </Text>
-                  <ChevronRight size={18} color={tokens.color.text.muted} />
-                </Pressable>
-              ))}
-            </Card>
+                  <View
+                    style={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: 10,
+                      backgroundColor: tokens.color.bgKpi.green,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Shield size={18} color={tokens.color.state.success} />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text
+                      style={{
+                        fontFamily: tokens.font.family.body,
+                        fontSize: 14,
+                        fontWeight: "500",
+                        color: tokens.color.ink[900],
+                      }}
+                    >
+                      KYC verified
+                    </Text>
+                    <Text
+                      style={{
+                        marginTop: 2,
+                        fontFamily: tokens.font.family.body,
+                        fontSize: 12,
+                        color: tokens.color.ink[500],
+                      }}
+                    >
+                      License, RC, insurance up to date
+                    </Text>
+                  </View>
+                  <StatusPill label="Active" tone="success" size="xs" />
+                </View>
+
+                {[
+                  { icon: User, label: "Profile" },
+                  { icon: Truck, label: "My vehicles", subtitle: "TS 12 AB 1234 · TS 09 CD 5678" },
+                  { icon: Package, label: "Documents" },
+                  { icon: Clock, label: "Earnings & payouts", subtitle: "Pending payout: ₹18,200" },
+                  { icon: Headphones, label: "Support & help" },
+                ].map((it) => (
+                  <ListItem
+                    key={it.label}
+                    icon={<it.icon size={18} color={tokens.color.brand.green} />}
+                    title={it.label}
+                    subtitle={(it as any).subtitle}
+                  />
+                ))}
+              </Card>
+            </View>
 
             <Pressable
               onPress={() => router.replace("/")}
-              style={{
-                marginTop: 24,
+              style={({ pressed }) => ({
                 alignItems: "center",
                 paddingVertical: 14,
-                borderRadius: 12,
-                borderWidth: 1.5,
-                borderColor: tokens.color.state.danger,
-              }}
+                borderRadius: 14,
+                borderWidth: 1,
+                borderColor: tokens.color.border.hairline,
+                backgroundColor: pressed ? tokens.color.state.dangerBg : "transparent",
+              })}
             >
-              <Text style={{ fontFamily: "Poppins", fontWeight: "600", fontSize: 14, color: tokens.color.state.danger }}>
-                Logout
+              <Text
+                style={{
+                  fontFamily: tokens.font.family.body,
+                  fontWeight: "600",
+                  fontSize: 14,
+                  color: tokens.color.state.danger,
+                }}
+              >
+                Log out
               </Text>
             </Pressable>
           </View>

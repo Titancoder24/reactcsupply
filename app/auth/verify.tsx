@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, ScrollView } from "react-native";
+import { View, Text, ScrollView, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { tokens } from "@/theme/tokens";
 import { Button, Card, Header, OtpInput } from "@/components/ui";
+import { ArrowRight } from "@/components/ui/Icon";
 
 export default function VerifyScreen() {
   const router = useRouter();
@@ -25,8 +26,6 @@ export default function VerifyScreen() {
       setError("Enter the 6-digit OTP");
       return;
     }
-
-    // Demo phone numbers + 123456 OTP route to their dashboards.
     const demoMap: Record<string, string> = {
       "9000000001": "/(customer)/home",
       "9000000002": "/(vendor)/dashboard",
@@ -37,84 +36,131 @@ export default function VerifyScreen() {
       router.replace(route as any);
       return;
     }
-
-    // Default: customer dashboard
     if (code === "123456") {
       router.replace("/(customer)/home");
       return;
     }
-
-    setError("Invalid OTP. Try 123456 in demo mode.");
+    setError("Invalid OTP. Use 123456 in demo mode.");
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: tokens.color.surface.light }}>
+    <View style={{ flex: 1, backgroundColor: tokens.color.surface.page }}>
       <SafeAreaView style={{ flex: 1 }} edges={["top", "bottom"]}>
-        <Header title="Verify OTP" />
-        <ScrollView contentContainerStyle={{ padding: 20, gap: 24 }}>
-          <Card style={{ alignItems: "center", paddingVertical: 32 }}>
+        <Header title="Verify" variant="ghost" />
+        <ScrollView contentContainerStyle={{ padding: 20, gap: 20 }}>
+          <View style={{ alignItems: "center", marginTop: 8 }}>
             <Text
               style={{
-                fontSize: 22,
-                fontFamily: "Poppins",
-                fontWeight: "600",
-                color: tokens.color.text.dark,
-                marginBottom: 4,
+                fontFamily: tokens.font.family.display,
+                fontWeight: "700",
+                fontSize: 26,
+                color: tokens.color.ink[900],
+                letterSpacing: -0.6,
               }}
             >
-              Enter the OTP
+              Enter the code
             </Text>
             <Text
               style={{
+                marginTop: 6,
+                fontFamily: tokens.font.family.body,
                 fontSize: 14,
-                fontFamily: "Poppins",
-                color: tokens.color.text.muted,
-                marginBottom: 24,
+                color: tokens.color.ink[500],
                 textAlign: "center",
               }}
             >
-              We've sent a 6-digit code to{"\n"}+91 {phone}
+              We sent a 6-digit code to{" "}
+              <Text style={{ fontFamily: tokens.font.family.mono, color: tokens.color.ink[800] }}>
+                +91 {phone}
+              </Text>
             </Text>
+          </View>
 
-            <OtpInput value={code} onChange={setCode} length={6} />
+          <Card padded={20}>
+            <View style={{ alignItems: "center" }}>
+              <OtpInput value={code} onChange={setCode} length={6} cellSize={48} />
 
-            {error && (
-              <Text
+              {error && (
+                <Text
+                  style={{
+                    marginTop: 14,
+                    color: tokens.color.state.danger,
+                    fontFamily: tokens.font.family.body,
+                    fontSize: 13,
+                  }}
+                >
+                  {error}
+                </Text>
+              )}
+
+              <View
                 style={{
-                  marginTop: 12,
-                  color: tokens.color.state.danger,
-                  fontFamily: "Poppins",
-                  fontSize: 13,
+                  marginTop: 16,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 4,
                 }}
               >
-                {error}
-              </Text>
-            )}
+                <Text
+                  style={{
+                    fontFamily: tokens.font.family.body,
+                    fontSize: 12,
+                    color: tokens.color.ink[500],
+                  }}
+                >
+                  Didn't get it?
+                </Text>
+                {seconds > 0 ? (
+                  <Text
+                    style={{
+                      fontFamily: tokens.font.family.mono,
+                      fontSize: 12,
+                      color: tokens.color.ink[700],
+                      fontWeight: "600",
+                    }}
+                  >
+                    Resend in {String(seconds).padStart(2, "0")}s
+                  </Text>
+                ) : (
+                  <Pressable onPress={() => setSeconds(60)}>
+                    <Text
+                      style={{
+                        fontFamily: tokens.font.family.body,
+                        fontSize: 12,
+                        color: tokens.color.customer.primary,
+                        fontWeight: "600",
+                      }}
+                    >
+                      Resend now
+                    </Text>
+                  </Pressable>
+                )}
+              </View>
+            </View>
 
-            <Text
-              style={{
-                marginTop: 16,
-                fontFamily: "Poppins",
-                fontSize: 12,
-                color: tokens.color.text.muted,
-              }}
-            >
-              {seconds > 0 ? `Resend in ${seconds}s` : "Resend OTP"}
-            </Text>
-
-            <View style={{ height: 24 }} />
-            <Button label="Verify & Continue" onPress={onVerify} disabled={code.length !== 6} />
+            <View style={{ height: 16 }} />
+            <Button
+              label="Verify & continue"
+              onPress={onVerify}
+              disabled={code.length !== 6}
+              iconRight={<ArrowRight size={18} color="#fff" />}
+            />
           </Card>
 
           <Text
             style={{
               fontSize: 12,
-              fontFamily: "Poppins",
-              color: tokens.color.text.muted,
+              fontFamily: tokens.font.family.body,
+              color: tokens.color.ink[500],
               textAlign: "center",
             }}
           >
-            Demo mode: use OTP 123456
+            Demo mode: use OTP{" "}
+            <Text
+              style={{ fontFamily: tokens.font.family.mono, fontWeight: "600", color: tokens.color.ink[800] }}
+            >
+              123456
+            </Text>
           </Text>
         </ScrollView>
       </SafeAreaView>

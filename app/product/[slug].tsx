@@ -3,8 +3,8 @@ import { View, Text, ScrollView, Pressable, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { tokens } from "@/theme/tokens";
-import { Button, Card, Header, QtyStepper, StatusPill } from "@/components/ui";
-import { Heart, Star, ShoppingCart, MapPin, Truck, Shield } from "@/components/ui/Icon";
+import { Avatar, Button, Card, Header, QtyStepper, StatusPill, Stat } from "@/components/ui";
+import { Heart, Star, ShoppingCart, MapPin, Truck, Shield, Check } from "@/components/ui/Icon";
 import { useProductBySlug } from "@/hooks/use-catalog";
 import { formatCount, formatINR } from "@/lib/utils";
 import { useCartStore } from "@/stores/cart-store";
@@ -15,14 +15,22 @@ export default function ProductDetailScreen() {
   const { data, isLoading } = useProductBySlug(slug);
   const add = useCartStore((s) => s.add);
   const [favorite, setFavorite] = useState(false);
+  const [activeImage, setActiveImage] = useState(0);
   const [qty, setQty] = useState(10);
 
   if (isLoading || !data) {
     return (
-      <View style={{ flex: 1, backgroundColor: tokens.color.surface.light }}>
+      <View style={{ flex: 1, backgroundColor: tokens.color.surface.page }}>
         <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
-          <Header title="Product Detail" />
-          <Text style={{ textAlign: "center", padding: 32, fontFamily: "Poppins", color: tokens.color.text.muted }}>
+          <Header title="Product" />
+          <Text
+            style={{
+              textAlign: "center",
+              padding: 32,
+              fontFamily: tokens.font.family.body,
+              color: tokens.color.ink[500],
+            }}
+          >
             Loading product...
           </Text>
         </SafeAreaView>
@@ -32,8 +40,6 @@ export default function ProductDetailScreen() {
 
   const { product, variants } = data;
   const minMoq = variants[0]?.moq ?? 1;
-
-  // Auto-pick variant with highest MOQ <= qty
   const activeVariant =
     [...variants].reverse().find((v) => v.moq <= qty) ?? variants[0];
   const unitPrice = activeVariant ? Number(activeVariant.price_per_unit) : Number(product.base_price);
@@ -55,38 +61,51 @@ export default function ProductDetailScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: tokens.color.surface.light }}>
+    <View style={{ flex: 1, backgroundColor: tokens.color.surface.page }}>
       <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
         <Header
-          title="Product Detail"
+          title="Product"
           rightActions={
-            <Pressable onPress={() => setFavorite(!favorite)} hitSlop={8}>
+            <Pressable
+              onPress={() => setFavorite(!favorite)}
+              hitSlop={8}
+              style={{
+                width: 36,
+                height: 36,
+                borderRadius: 10,
+                backgroundColor: tokens.color.ink[50],
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
               <Heart
-                size={22}
-                color={favorite ? tokens.color.state.danger : tokens.color.text.dark}
+                size={18}
+                color={favorite ? tokens.color.state.danger : tokens.color.ink[800]}
               />
             </Pressable>
           }
         />
 
-        <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
+        <ScrollView contentContainerStyle={{ paddingBottom: 140 }}>
           {/* Hero */}
           <View
             style={{
-              height: 320,
-              backgroundColor: tokens.color.surface.light,
+              height: 360,
               alignItems: "center",
               justifyContent: "center",
-              paddingHorizontal: 40,
+              padding: 20,
             }}
           >
             <View
               style={{
-                width: 220,
-                height: 280,
-                borderRadius: 12,
+                width: "100%",
+                height: 320,
+                borderRadius: 24,
+                backgroundColor: tokens.color.surface.white,
+                borderWidth: 1,
+                borderColor: tokens.color.border.hairline,
                 overflow: "hidden",
-                backgroundColor: "#fff",
+                ...(tokens.shadow.sm as any),
               }}
             >
               {product.images?.[0] && (
@@ -104,20 +123,24 @@ export default function ProductDetailScreen() {
             style={{
               flexDirection: "row",
               justifyContent: "center",
-              gap: 12,
-              paddingVertical: 16,
+              gap: 10,
+              paddingBottom: 20,
             }}
           >
             {[0, 1, 2].map((i) => (
-              <View
+              <Pressable
                 key={i}
+                onPress={() => setActiveImage(i)}
                 style={{
-                  width: 64,
-                  height: 64,
-                  borderRadius: 8,
-                  borderWidth: i === 0 ? 2 : 1,
-                  borderColor: i === 0 ? tokens.color.customer.accent : tokens.color.border.divider,
-                  backgroundColor: "#fff",
+                  width: 56,
+                  height: 56,
+                  borderRadius: 12,
+                  borderWidth: activeImage === i ? 2 : 1,
+                  borderColor:
+                    activeImage === i
+                      ? tokens.color.customer.accent
+                      : tokens.color.border.hairline,
+                  backgroundColor: tokens.color.surface.white,
                   overflow: "hidden",
                 }}
               >
@@ -128,194 +151,406 @@ export default function ProductDetailScreen() {
                     resizeMode="cover"
                   />
                 )}
-              </View>
+              </Pressable>
             ))}
             <View
               style={{
-                width: 64,
-                height: 64,
-                borderRadius: 8,
-                backgroundColor: tokens.color.text.dark,
+                width: 56,
+                height: 56,
+                borderRadius: 12,
+                backgroundColor: tokens.color.ink[800],
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
-              <Text style={{ color: "#fff", fontFamily: "Poppins", fontWeight: "700", fontSize: 16 }}>+2</Text>
+              <Text
+                style={{
+                  color: "#fff",
+                  fontFamily: tokens.font.family.display,
+                  fontWeight: "700",
+                  fontSize: 14,
+                }}
+              >
+                +2
+              </Text>
             </View>
           </View>
 
-          {/* Info */}
-          <View style={{ paddingHorizontal: 20, paddingBottom: 20, backgroundColor: "#fff" }}>
-            <Text
-              style={{
-                fontSize: 22,
-                fontFamily: "Poppins",
-                fontWeight: "600",
-                color: tokens.color.text.dark,
-                paddingTop: 16,
-              }}
-            >
-              {product.name}
-            </Text>
-            <Text
-              style={{
-                marginTop: 4,
-                fontSize: 14,
-                fontFamily: "Poppins",
-                fontWeight: "500",
-                color: tokens.color.text.muted,
-              }}
-            >
-              50 kg | {product.brand ?? "C-Supply"}
-            </Text>
-
-            {/* Rating */}
-            <View style={{ flexDirection: "row", alignItems: "center", marginTop: 12, gap: 4 }}>
-              <Text style={{ fontSize: 14, fontFamily: "Poppins", fontWeight: "600", color: tokens.color.text.dark }}>
-                {Number(product.rating).toFixed(1)}
-              </Text>
-              <View style={{ flexDirection: "row", marginLeft: 4, gap: 2 }}>
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star
-                    key={i}
-                    size={14}
-                    color={i < Math.round(Number(product.rating)) ? tokens.color.star : "#E5E7EB"}
-                  />
-                ))}
-              </View>
+          {/* Product info */}
+          <View style={{ paddingHorizontal: 20, gap: 16 }}>
+            <View>
               <Text
                 style={{
-                  marginLeft: 4,
-                  fontSize: 14,
-                  fontFamily: "Poppins",
-                  color: tokens.color.text.muted,
+                  fontFamily: tokens.font.family.body,
+                  fontSize: 11,
+                  fontWeight: "600",
+                  color: tokens.color.ink[500],
+                  letterSpacing: 0.6,
+                  textTransform: "uppercase",
                 }}
               >
-                ({formatCount(product.reviews_count)} reviews)
+                {product.brand ?? "C-Supply"} · 50 kg
               </Text>
-            </View>
+              <Text
+                style={{
+                  marginTop: 6,
+                  fontFamily: tokens.font.family.display,
+                  fontSize: 24,
+                  fontWeight: "700",
+                  color: tokens.color.ink[900],
+                  letterSpacing: -0.6,
+                  lineHeight: 30,
+                }}
+              >
+                {product.name}
+              </Text>
 
-            {/* Price + stock */}
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginTop: 16,
-              }}
-            >
-              <Text style={{ fontFamily: "Poppins", fontWeight: "700", fontSize: 20, color: tokens.color.text.dark }}>
-                {formatINR(unitPrice)}{" "}
-                <Text
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginTop: 10 }}>
+                <View
                   style={{
-                    fontSize: 14,
-                    fontWeight: "500",
-                    color: tokens.color.text.muted,
+                    paddingHorizontal: 10,
+                    paddingVertical: 4,
+                    borderRadius: 999,
+                    backgroundColor: tokens.color.bgKpi.orange,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 4,
                   }}
                 >
-                  / {product.unit.toLowerCase()}
+                  <Star size={12} color={tokens.color.star} />
+                  <Text
+                    style={{
+                      fontFamily: tokens.font.family.mono,
+                      fontSize: 12,
+                      fontWeight: "700",
+                      color: tokens.color.ink[800],
+                    }}
+                  >
+                    {Number(product.rating).toFixed(1)}
+                  </Text>
+                </View>
+                <Text
+                  style={{
+                    fontFamily: tokens.font.family.body,
+                    fontSize: 13,
+                    color: tokens.color.ink[500],
+                  }}
+                >
+                  {formatCount(product.reviews_count)} reviews
                 </Text>
-              </Text>
-              <StatusPill label="In Stock" tone="success" />
+                <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: tokens.color.ink[300] }} />
+                <StatusPill label="In stock" tone="success" />
+              </View>
             </View>
 
-            {/* Quantity */}
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginTop: 24,
-              }}
-            >
-              <View>
-                <Text style={{ fontFamily: "Poppins", fontWeight: "600", fontSize: 16, color: tokens.color.text.dark }}>
-                  Quantity
+            {/* Price + quantity */}
+            <Card padded={20}>
+              <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
+                <View>
+                  <Text
+                    style={{
+                      fontFamily: tokens.font.family.body,
+                      fontSize: 11,
+                      fontWeight: "600",
+                      color: tokens.color.ink[500],
+                      letterSpacing: 0.6,
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    Price per {product.unit.toLowerCase()}
+                  </Text>
+                  <View style={{ flexDirection: "row", alignItems: "baseline", gap: 6, marginTop: 4 }}>
+                    <Text
+                      style={{
+                        fontFamily: tokens.font.family.display,
+                        fontSize: 28,
+                        fontWeight: "700",
+                        color: tokens.color.ink[900],
+                        letterSpacing: -0.8,
+                      }}
+                    >
+                      {formatINR(unitPrice)}
+                    </Text>
+                    {Number(product.base_price) > unitPrice && (
+                      <Text
+                        style={{
+                          fontFamily: tokens.font.family.body,
+                          fontSize: 13,
+                          color: tokens.color.ink[400],
+                          textDecorationLine: "line-through",
+                        }}
+                      >
+                        {formatINR(Number(product.base_price))}
+                      </Text>
+                    )}
+                  </View>
+                </View>
+                <View style={{ alignItems: "flex-end" }}>
+                  <Text
+                    style={{
+                      fontFamily: tokens.font.family.body,
+                      fontSize: 11,
+                      fontWeight: "600",
+                      color: tokens.color.ink[500],
+                      letterSpacing: 0.6,
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    Quantity
+                  </Text>
+                  <View style={{ marginTop: 4 }}>
+                    <QtyStepper value={qty} onChange={setQty} min={minMoq} />
+                  </View>
+                </View>
+              </View>
+
+              <View
+                style={{
+                  marginTop: 14,
+                  paddingTop: 14,
+                  borderTopWidth: 1,
+                  borderTopColor: tokens.color.border.hairline,
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Text
+                  style={{
+                    fontFamily: tokens.font.family.body,
+                    fontSize: 13,
+                    color: tokens.color.ink[600],
+                  }}
+                >
+                  Subtotal · {qty} {product.unit.toLowerCase()}{qty === 1 ? "" : "s"}
                 </Text>
-                <Text style={{ fontFamily: "Poppins", fontSize: 12, color: tokens.color.text.muted }}>
-                  (Min. {minMoq} {product.unit.toLowerCase()})
+                <Text
+                  style={{
+                    fontFamily: tokens.font.family.display,
+                    fontSize: 18,
+                    fontWeight: "700",
+                    color: tokens.color.ink[900],
+                    letterSpacing: -0.4,
+                  }}
+                >
+                  {formatINR(qty * unitPrice)}
                 </Text>
               </View>
-              <QtyStepper value={qty} onChange={setQty} min={minMoq} />
+            </Card>
+
+            {/* MOQ tiers */}
+            {variants.length > 1 && (
+              <Card padded={16}>
+                <Text
+                  style={{
+                    fontFamily: tokens.font.family.body,
+                    fontSize: 11,
+                    fontWeight: "600",
+                    color: tokens.color.ink[500],
+                    letterSpacing: 0.6,
+                    textTransform: "uppercase",
+                    marginBottom: 12,
+                  }}
+                >
+                  Bulk pricing tiers
+                </Text>
+                <View style={{ gap: 8 }}>
+                  {variants.map((v) => {
+                    const isActive = activeVariant?.id === v.id;
+                    return (
+                      <View
+                        key={v.id}
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          paddingHorizontal: 12,
+                          paddingVertical: 10,
+                          borderRadius: 10,
+                          backgroundColor: isActive ? tokens.color.customer.tint : tokens.color.ink[50],
+                          borderWidth: isActive ? 1 : 0,
+                          borderColor: isActive ? tokens.color.customer.primary : "transparent",
+                        }}
+                      >
+                        <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                          {isActive && <Check size={14} color={tokens.color.customer.primary} strokeWidth={3} />}
+                          <Text
+                            style={{
+                              fontFamily: tokens.font.family.body,
+                              fontSize: 13,
+                              fontWeight: "500",
+                              color: tokens.color.ink[800],
+                            }}
+                          >
+                            {v.tier_name}
+                          </Text>
+                        </View>
+                        <Text
+                          style={{
+                            fontFamily: tokens.font.family.mono,
+                            fontSize: 13,
+                            fontWeight: "600",
+                            color: tokens.color.ink[900],
+                          }}
+                        >
+                          {formatINR(Number(v.price_per_unit))} / {product.unit.toLowerCase()}
+                        </Text>
+                      </View>
+                    );
+                  })}
+                </View>
+              </Card>
+            )}
+
+            {/* Vendor card */}
+            <Card padded={16}>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+                <Avatar name="Sri Balaji Building Materials" size={44} tone="primary" />
+                <View style={{ flex: 1 }}>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                    <Text
+                      style={{
+                        fontFamily: tokens.font.family.display,
+                        fontSize: 14,
+                        fontWeight: "600",
+                        color: tokens.color.ink[900],
+                        letterSpacing: -0.2,
+                      }}
+                    >
+                      Sri Balaji Building Materials
+                    </Text>
+                    <Shield size={14} color={tokens.color.state.success} />
+                  </View>
+                  <Text
+                    style={{
+                      marginTop: 2,
+                      fontFamily: tokens.font.family.body,
+                      fontSize: 12,
+                      color: tokens.color.ink[500],
+                    }}
+                  >
+                    Verified vendor · Hyderabad · 4.7 ★
+                  </Text>
+                </View>
+                <Pressable>
+                  <Text
+                    style={{
+                      fontFamily: tokens.font.family.body,
+                      fontSize: 13,
+                      fontWeight: "600",
+                      color: tokens.color.customer.primary,
+                    }}
+                  >
+                    View
+                  </Text>
+                </Pressable>
+              </View>
+            </Card>
+
+            {/* Trust strip */}
+            <View style={{ flexDirection: "row", gap: 10 }}>
+              {[
+                { Icon: Truck, label: "Delivery", value: "in 24h" },
+                { Icon: MapPin, label: "From", value: "Hyderabad" },
+                { Icon: Shield, label: "Warranty", value: "Mfg" },
+              ].map((c) => (
+                <Card key={c.label} padded={12} style={{ flex: 1 }}>
+                  <c.Icon size={14} color={tokens.color.customer.primary} />
+                  <Text
+                    style={{
+                      marginTop: 6,
+                      fontFamily: tokens.font.family.body,
+                      fontSize: 10,
+                      fontWeight: "600",
+                      color: tokens.color.ink[500],
+                      letterSpacing: 0.4,
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    {c.label}
+                  </Text>
+                  <Text
+                    style={{
+                      fontFamily: tokens.font.family.display,
+                      fontSize: 13,
+                      fontWeight: "600",
+                      color: tokens.color.ink[900],
+                      letterSpacing: -0.2,
+                    }}
+                  >
+                    {c.value}
+                  </Text>
+                </Card>
+              ))}
             </View>
 
             {/* Description */}
-            <View style={{ marginTop: 24 }}>
-              <Text style={{ fontFamily: "Poppins", fontWeight: "600", fontSize: 16, color: tokens.color.text.dark }}>
-                Product Description
+            <View>
+              <Text
+                style={{
+                  fontFamily: tokens.font.family.body,
+                  fontSize: 11,
+                  fontWeight: "600",
+                  color: tokens.color.ink[500],
+                  letterSpacing: 0.6,
+                  textTransform: "uppercase",
+                  marginBottom: 8,
+                }}
+              >
+                Description
               </Text>
               <Text
                 style={{
-                  marginTop: 8,
-                  fontFamily: "Poppins",
+                  fontFamily: tokens.font.family.body,
                   fontSize: 14,
-                  color: tokens.color.text.dark,
-                  lineHeight: 20,
+                  color: tokens.color.ink[700],
+                  lineHeight: 22,
                 }}
               >
                 {product.description}
               </Text>
             </View>
-
-            {/* Info chips */}
-            <View style={{ marginTop: 16, flexDirection: "row", gap: 12, flexWrap: "wrap" }}>
-              {[
-                { icon: Truck, label: "Delivery in 24h" },
-                { icon: MapPin, label: "Hyderabad" },
-                { icon: Shield, label: "Verified Vendor" },
-              ].map((c, i) => (
-                <View
-                  key={i}
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: 6,
-                    paddingHorizontal: 12,
-                    paddingVertical: 6,
-                    borderRadius: 999,
-                    backgroundColor: tokens.color.surface.light,
-                  }}
-                >
-                  <c.icon size={14} color={tokens.color.customer.primary} />
-                  <Text style={{ fontFamily: "Poppins", fontSize: 12, color: tokens.color.text.dark }}>{c.label}</Text>
-                </View>
-              ))}
-            </View>
           </View>
         </ScrollView>
 
-        {/* Sticky bottom action bar */}
+        {/* Sticky bottom CTA */}
         <View
           style={{
             position: "absolute",
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: "#fff",
+            backgroundColor: "rgba(255,255,255,0.97)",
             paddingHorizontal: 20,
-            paddingTop: 12,
-            paddingBottom: 24,
+            paddingTop: 14,
+            paddingBottom: 28,
             flexDirection: "row",
-            gap: 12,
+            gap: 10,
             borderTopWidth: 1,
-            borderTopColor: tokens.color.border.divider,
+            borderTopColor: tokens.color.border.hairline,
           }}
         >
           <Pressable
             style={{
               width: 52,
               height: 52,
-              borderRadius: 12,
-              backgroundColor: tokens.color.surface.light,
+              borderRadius: 14,
+              backgroundColor: tokens.color.ink[50],
+              borderWidth: 1,
+              borderColor: tokens.color.border.hairline,
               alignItems: "center",
               justifyContent: "center",
             }}
             onPress={() => router.push("/(customer)/cart")}
           >
-            <ShoppingCart size={24} color={tokens.color.text.dark} />
+            <ShoppingCart size={20} color={tokens.color.ink[800]} />
           </Pressable>
           <View style={{ flex: 1 }}>
-            <Button label="Add to Cart" onPress={onAddToCart} surface="customer" />
+            <Button
+              label={`Add to cart · ${formatINR(qty * unitPrice)}`}
+              onPress={onAddToCart}
+              surface="customer"
+            />
           </View>
         </View>
       </SafeAreaView>

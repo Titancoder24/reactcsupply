@@ -10,6 +10,7 @@ interface InputProps extends Omit<TextInputProps, "style"> {
   prefix?: React.ReactNode;
   suffix?: React.ReactNode;
   surface?: "customer" | "vendor" | "transporter";
+  size?: "md" | "lg";
 }
 
 export const Input: React.FC<InputProps> = ({
@@ -19,11 +20,13 @@ export const Input: React.FC<InputProps> = ({
   prefix,
   suffix,
   surface = "customer",
+  size = "lg",
   ...rest
 }) => {
   const [focused, setFocused] = useState(false);
   const focusBorder =
     surface === "customer" ? tokens.color.customer.primary : tokens.color.brand.green;
+  const height = size === "lg" ? 52 : 44;
 
   return (
     <View style={{ width: "100%" }}>
@@ -31,10 +34,11 @@ export const Input: React.FC<InputProps> = ({
         <Text
           style={{
             fontSize: 12,
-            fontFamily: "Poppins",
+            fontFamily: tokens.font.family.body,
             fontWeight: "500",
-            color: tokens.color.text.muted,
-            marginBottom: 6,
+            color: tokens.color.ink[600],
+            marginBottom: 8,
+            letterSpacing: 0.1,
           }}
         >
           {label}
@@ -42,8 +46,8 @@ export const Input: React.FC<InputProps> = ({
       )}
       <View
         style={{
-          height: 52,
-          borderRadius: 8,
+          height,
+          borderRadius: tokens.radius.md,
           borderWidth: 1,
           borderColor: error
             ? tokens.color.state.danger
@@ -53,10 +57,11 @@ export const Input: React.FC<InputProps> = ({
           backgroundColor: tokens.color.surface.white,
           flexDirection: "row",
           alignItems: "center",
-          paddingHorizontal: 16,
+          paddingHorizontal: 14,
+          ...(focused ? { ...(tokens.shadow.xs as any) } : {}),
         }}
       >
-        {prefix && <View style={{ marginRight: 8 }}>{prefix}</View>}
+        {prefix && <View style={{ marginRight: 10 }}>{prefix}</View>}
         <TextInput
           {...rest}
           onFocus={(e) => {
@@ -67,23 +72,23 @@ export const Input: React.FC<InputProps> = ({
             setFocused(false);
             rest.onBlur?.(e);
           }}
-          placeholderTextColor={tokens.color.text.secondary}
+          placeholderTextColor={tokens.color.ink[400]}
           style={{
             flex: 1,
             fontSize: 14,
-            fontFamily: "Poppins",
-            color: tokens.color.text.dark,
+            fontFamily: tokens.font.family.body,
+            color: tokens.color.ink[900],
             ...noOutline,
           }}
         />
-        {suffix && <View style={{ marginLeft: 8 }}>{suffix}</View>}
+        {suffix && <View style={{ marginLeft: 10 }}>{suffix}</View>}
       </View>
       {(helper || error) && (
         <Text
           style={{
             fontSize: 12,
-            fontFamily: "Poppins",
-            color: error ? tokens.color.state.danger : tokens.color.text.muted,
+            fontFamily: tokens.font.family.body,
+            color: error ? tokens.color.state.danger : tokens.color.ink[500],
             marginTop: 6,
           }}
         >

@@ -3,31 +3,42 @@ import { View, ViewProps } from "react-native";
 import { tokens } from "@/theme/tokens";
 
 interface CardProps extends ViewProps {
-  elevated?: boolean;
-  padded?: boolean;
+  elevation?: "none" | "xs" | "sm" | "md" | "lg";
+  padded?: boolean | number;
+  bordered?: boolean;
+  tone?: "white" | "subtle" | "tint";
   children?: React.ReactNode;
 }
 
 export const Card: React.FC<CardProps> = ({
-  elevated = true,
+  elevation = "xs",
   padded = true,
+  bordered = true,
+  tone = "white",
   style,
   children,
   ...rest
 }) => {
+  const bg =
+    tone === "subtle"
+      ? tokens.color.surface.softBg
+      : tone === "tint"
+        ? tokens.color.customer.tint
+        : tokens.color.surface.white;
+
+  const padding = typeof padded === "number" ? padded : padded ? 16 : 0;
+
   return (
     <View
       {...rest}
       style={[
         {
-          backgroundColor: tokens.color.surface.white,
-          borderRadius: tokens.radius.md,
-          padding: padded ? 16 : 0,
-          shadowColor: "#000",
-          shadowOpacity: elevated ? 0.06 : 0,
-          shadowRadius: elevated ? 6 : 0,
-          shadowOffset: { width: 0, height: 1 },
-          elevation: elevated ? 2 : 0,
+          backgroundColor: bg,
+          borderRadius: tokens.radius.lg,
+          padding,
+          borderWidth: bordered ? 1 : 0,
+          borderColor: tokens.color.border.hairline,
+          ...(tokens.shadow[elevation] as any),
         },
         style,
       ]}

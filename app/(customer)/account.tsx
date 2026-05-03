@@ -3,36 +3,46 @@ import { View, Text, ScrollView, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { tokens } from "@/theme/tokens";
-import { Card, Header, StatusPill } from "@/components/ui";
-import { ChevronRight, User, Settings, Lock, Bell, Headphones, Shield, Tag } from "@/components/ui/Icon";
+import { Avatar, Card, Header, ListItem, SectionLabel, StatusPill } from "@/components/ui";
+import {
+  User,
+  Tag,
+  Bell,
+  Settings,
+  Lock,
+  Shield,
+  Headphones,
+  Package,
+} from "@/components/ui/Icon";
 
 const MENU_GROUPS = [
   {
     label: "Account",
     items: [
-      { icon: User, label: "Personal Information", route: null },
-      { icon: Tag, label: "Saved Addresses", route: null },
-      { icon: Tag, label: "GST Details", route: null },
+      { icon: User, label: "Personal information", subtitle: "Name, phone, email" },
+      { icon: Tag, label: "Saved addresses", subtitle: "2 addresses" },
+      { icon: Tag, label: "GST details", subtitle: "33ABCDE1234F1Z5" },
     ],
   },
   {
-    label: "Preferences",
+    label: "Activity",
     items: [
-      { icon: Bell, label: "Notifications", route: null },
-      { icon: Settings, label: "App Settings", route: null },
+      { icon: Package, label: "Order history" },
+      { icon: Bell, label: "Notifications", subtitle: "Email, push, SMS" },
     ],
   },
   {
     label: "Security",
     items: [
-      { icon: Lock, label: "Change Passcode", route: null },
-      { icon: Shield, label: "Privacy & Data", route: null },
+      { icon: Lock, label: "Change passcode" },
+      { icon: Shield, label: "Privacy & data" },
     ],
   },
   {
     label: "Support",
     items: [
-      { icon: Headphones, label: "Support & Help", route: null },
+      { icon: Headphones, label: "Help & support" },
+      { icon: Settings, label: "App settings" },
     ],
   },
 ];
@@ -41,93 +51,57 @@ export default function AccountScreen() {
   const router = useRouter();
 
   return (
-    <View style={{ flex: 1, backgroundColor: tokens.color.surface.light }}>
+    <View style={{ flex: 1, backgroundColor: tokens.color.surface.page }}>
       <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
         <Header title="Account" showBack={false} />
 
-        <ScrollView contentContainerStyle={{ padding: 20, gap: 16, paddingBottom: 32 }}>
+        <ScrollView contentContainerStyle={{ padding: 20, gap: 18, paddingBottom: 32 }}>
           {/* Profile card */}
-          <Card>
+          <Card padded={20}>
             <View style={{ flexDirection: "row", alignItems: "center", gap: 16 }}>
-              <View
-                style={{
-                  width: 64,
-                  height: 64,
-                  borderRadius: 32,
-                  backgroundColor: tokens.color.customer.primary,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Text style={{ color: "#fff", fontFamily: "Poppins", fontWeight: "700", fontSize: 24 }}>
-                  R
-                </Text>
-              </View>
+              <Avatar name="Ramesh Kumar" size={56} tone="primary" showStatus />
               <View style={{ flex: 1 }}>
                 <Text
                   style={{
-                    fontFamily: "Poppins",
-                    fontWeight: "600",
+                    fontFamily: tokens.font.family.display,
+                    fontWeight: "700",
                     fontSize: 18,
-                    color: tokens.color.text.dark,
+                    color: tokens.color.ink[900],
+                    letterSpacing: -0.3,
                   }}
                 >
                   Ramesh Kumar
                 </Text>
-                <Text style={{ fontFamily: "Poppins", fontSize: 13, color: tokens.color.text.muted }}>
+                <Text
+                  style={{
+                    marginTop: 2,
+                    fontFamily: tokens.font.family.mono,
+                    fontSize: 12,
+                    color: tokens.color.ink[500],
+                  }}
+                >
                   +91 9000000001
                 </Text>
-                <View style={{ flexDirection: "row", gap: 6, marginTop: 6 }}>
-                  <StatusPill label="Verified" tone="success" />
-                  <StatusPill label="Customer" tone="info" />
+                <View style={{ flexDirection: "row", gap: 6, marginTop: 8 }}>
+                  <StatusPill label="Verified" tone="success" size="xs" />
+                  <StatusPill label="Customer" tone="info" size="xs" />
                 </View>
               </View>
             </View>
           </Card>
 
           {MENU_GROUPS.map((group) => (
-            <View key={group.label}>
-              <Text
-                style={{
-                  fontFamily: "Poppins",
-                  fontWeight: "600",
-                  fontSize: 12,
-                  color: tokens.color.text.muted,
-                  marginBottom: 8,
-                  marginLeft: 4,
-                  textTransform: "uppercase",
-                  letterSpacing: 0.4,
-                }}
-              >
-                {group.label}
-              </Text>
+            <View key={group.label} style={{ gap: 8 }}>
+              <SectionLabel label={group.label} caps size="sm" />
               <Card padded={false}>
                 {group.items.map((item, idx) => (
-                  <Pressable
+                  <ListItem
                     key={item.label}
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      paddingHorizontal: 16,
-                      paddingVertical: 14,
-                      gap: 12,
-                      borderBottomWidth: idx < group.items.length - 1 ? 1 : 0,
-                      borderBottomColor: tokens.color.border.divider,
-                    }}
-                  >
-                    <item.icon size={20} color={tokens.color.customer.primary} />
-                    <Text
-                      style={{
-                        flex: 1,
-                        fontFamily: "Poppins",
-                        fontSize: 14,
-                        color: tokens.color.text.dark,
-                      }}
-                    >
-                      {item.label}
-                    </Text>
-                    <ChevronRight size={18} color={tokens.color.text.muted} />
-                  </Pressable>
+                    icon={<item.icon size={18} color={tokens.color.customer.primary} />}
+                    title={item.label}
+                    subtitle={(item as any).subtitle}
+                    divider={idx > 0}
+                  />
                 ))}
               </Card>
             </View>
@@ -135,26 +109,38 @@ export default function AccountScreen() {
 
           <Pressable
             onPress={() => router.replace("/")}
-            style={{
-              marginTop: 8,
+            style={({ pressed }) => ({
               alignItems: "center",
               paddingVertical: 14,
-              borderRadius: 12,
-              borderWidth: 1.5,
-              borderColor: tokens.color.state.danger,
-            }}
+              borderRadius: 14,
+              borderWidth: 1,
+              borderColor: tokens.color.border.hairline,
+              backgroundColor: pressed ? tokens.color.state.dangerBg : "transparent",
+            })}
           >
             <Text
               style={{
-                fontFamily: "Poppins",
+                fontFamily: tokens.font.family.body,
                 fontWeight: "600",
                 fontSize: 14,
                 color: tokens.color.state.danger,
               }}
             >
-              Logout
+              Log out
             </Text>
           </Pressable>
+
+          <View style={{ alignItems: "center", paddingTop: 8 }}>
+            <Text
+              style={{
+                fontFamily: tokens.font.family.mono,
+                fontSize: 11,
+                color: tokens.color.ink[400],
+              }}
+            >
+              C-Supply v1.0.0
+            </Text>
+          </View>
         </ScrollView>
       </SafeAreaView>
     </View>

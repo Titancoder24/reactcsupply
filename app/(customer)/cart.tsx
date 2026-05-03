@@ -3,8 +3,8 @@ import { View, Text, ScrollView, Pressable, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { tokens } from "@/theme/tokens";
-import { Button, Card, Header, QtyStepper } from "@/components/ui";
-import { MapPin, Trash, ShoppingCart } from "@/components/ui/Icon";
+import { Button, Card, Header, QtyStepper, EmptyState } from "@/components/ui";
+import { MapPin, Trash, ShoppingCart, ArrowRight } from "@/components/ui/Icon";
 import { useCartStore } from "@/stores/cart-store";
 import { formatINR } from "@/lib/utils";
 
@@ -20,73 +20,74 @@ export default function CartScreen() {
   const toPay = subtotal + deliveryCharge - youSave;
 
   return (
-    <View style={{ flex: 1, backgroundColor: tokens.color.surface.light }}>
+    <View style={{ flex: 1, backgroundColor: tokens.color.surface.page }}>
       <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
-        <Header title={`My Cart (${lines.length})`} />
+        <Header
+          title="Cart"
+          subtitle={lines.length === 0 ? "Empty" : `${lines.length} item${lines.length === 1 ? "" : "s"}`}
+          showBack={false}
+        />
 
         {lines.length === 0 ? (
-          <View style={{ flex: 1, alignItems: "center", justifyContent: "center", padding: 32 }}>
-            <View
-              style={{
-                width: 120,
-                height: 120,
-                borderRadius: 60,
-                backgroundColor: tokens.color.surface.white,
-                alignItems: "center",
-                justifyContent: "center",
-                marginBottom: 16,
-                borderWidth: 1,
-                borderColor: tokens.color.border.divider,
-              }}
-            >
-              <ShoppingCart size={56} color={tokens.color.text.muted} />
-            </View>
-            <Text
-              style={{
-                fontFamily: "Poppins",
-                fontSize: 18,
-                fontWeight: "600",
-                color: tokens.color.text.dark,
-                marginBottom: 4,
-              }}
-            >
-              Your cart is empty
-            </Text>
-            <Text
-              style={{
-                fontFamily: "Poppins",
-                fontSize: 14,
-                color: tokens.color.text.muted,
-                marginBottom: 16,
-                textAlign: "center",
-              }}
-            >
-              Browse materials and start adding to your cart
-            </Text>
-            <Button
-              label="Browse Categories"
-              onPress={() => router.push("/(customer)/home")}
-              fullWidth={false}
-              surface="customer"
-            />
-          </View>
+          <EmptyState
+            icon={<ShoppingCart size={32} color={tokens.color.ink[400]} />}
+            title="Your cart is empty"
+            description="Browse the catalog and start adding materials. Your cart syncs across devices."
+            cta={{ label: "Browse catalog", onPress: () => router.push("/(customer)/home") }}
+          />
         ) : (
           <>
-            <ScrollView contentContainerStyle={{ padding: 20, gap: 16, paddingBottom: 120 }}>
+            <ScrollView contentContainerStyle={{ padding: 20, gap: 14, paddingBottom: 140 }}>
               {/* Address card */}
-              <Card>
+              <Card padded={16}>
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
-                  <MapPin size={20} color={tokens.color.customer.primary} />
+                  <View
+                    style={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: 10,
+                      backgroundColor: tokens.color.customer.tint,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <MapPin size={16} color={tokens.color.customer.primary} />
+                  </View>
                   <View style={{ flex: 1 }}>
-                    <Text style={{ fontSize: 12, fontFamily: "Poppins", color: tokens.color.text.muted }}>
+                    <Text
+                      style={{
+                        fontFamily: tokens.font.family.body,
+                        fontSize: 11,
+                        fontWeight: "600",
+                        color: tokens.color.ink[500],
+                        letterSpacing: 0.6,
+                        textTransform: "uppercase",
+                      }}
+                    >
                       Deliver to
                     </Text>
-                    <Text style={{ fontSize: 14, fontFamily: "Poppins", fontWeight: "600", color: tokens.color.text.dark }}>
-                      Ahmedabad, Gujarat - 380001
+                    <Text
+                      style={{
+                        marginTop: 2,
+                        fontFamily: tokens.font.family.display,
+                        fontSize: 14,
+                        fontWeight: "600",
+                        color: tokens.color.ink[900],
+                        letterSpacing: -0.2,
+                      }}
+                    >
+                      Ahmedabad, Gujarat · 380001
                     </Text>
                   </View>
-                  <Pressable>
-                    <Text style={{ fontSize: 14, fontFamily: "Poppins", fontWeight: "600", color: tokens.color.customer.accent }}>
+                  <Pressable hitSlop={8}>
+                    <Text
+                      style={{
+                        fontFamily: tokens.font.family.body,
+                        fontSize: 13,
+                        fontWeight: "600",
+                        color: tokens.color.customer.primary,
+                      }}
+                    >
                       Change
                     </Text>
                   </Pressable>
@@ -94,114 +95,125 @@ export default function CartScreen() {
               </Card>
 
               {/* Line items */}
-              {lines.map((line) => (
-                <Card key={line.productId}>
-                  <View style={{ flexDirection: "row" }}>
-                    {/* Image */}
-                    <View
-                      style={{
-                        width: 72,
-                        height: 72,
-                        borderRadius: 8,
-                        backgroundColor: tokens.color.surface.light,
-                        overflow: "hidden",
-                      }}
-                    >
-                      {line.image && (
-                        <Image
-                          source={{ uri: line.image }}
-                          style={{ width: "100%", height: "100%" }}
-                          resizeMode="cover"
-                        />
-                      )}
-                    </View>
-
-                    {/* Info */}
-                    <View style={{ flex: 1, marginLeft: 12, justifyContent: "space-between" }}>
-                      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-                        <Text
-                          numberOfLines={2}
-                          style={{
-                            flex: 1,
-                            fontSize: 14,
-                            fontFamily: "Poppins",
-                            fontWeight: "600",
-                            color: tokens.color.text.dark,
-                          }}
-                        >
-                          {line.name}
-                        </Text>
-                        <Pressable onPress={() => remove(line.productId)} hitSlop={8}>
-                          <Trash size={18} color={tokens.color.text.muted} />
-                        </Pressable>
-                      </View>
-                      <Text
-                        style={{
-                          fontSize: 12,
-                          fontFamily: "Poppins",
-                          color: tokens.color.text.muted,
-                        }}
-                      >
-                        {line.unit}
-                      </Text>
-                      <Text
-                        style={{
-                          fontSize: 12,
-                          fontFamily: "Poppins",
-                          fontWeight: "600",
-                          color: tokens.color.text.dark,
-                        }}
-                      >
-                        {formatINR(line.unitPrice)} / {line.unit.toLowerCase()}
-                      </Text>
+              <View style={{ gap: 10 }}>
+                {lines.map((line) => (
+                  <Card key={line.productId} padded={14}>
+                    <View style={{ flexDirection: "row", gap: 12 }}>
                       <View
                         style={{
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                          marginTop: 8,
+                          width: 72,
+                          height: 72,
+                          borderRadius: 12,
+                          backgroundColor: tokens.color.ink[50],
+                          overflow: "hidden",
                         }}
                       >
-                        <QtyStepper
-                          value={line.qty}
-                          onChange={(q) => setQty(line.productId, q)}
-                          size="sm"
-                        />
-                        <Text
+                        {line.image && (
+                          <Image
+                            source={{ uri: line.image }}
+                            style={{ width: "100%", height: "100%" }}
+                            resizeMode="cover"
+                          />
+                        )}
+                      </View>
+
+                      <View style={{ flex: 1 }}>
+                        <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 8 }}>
+                          <View style={{ flex: 1 }}>
+                            {line.brand && (
+                              <Text
+                                style={{
+                                  fontFamily: tokens.font.family.body,
+                                  fontSize: 10,
+                                  fontWeight: "600",
+                                  color: tokens.color.ink[500],
+                                  letterSpacing: 0.5,
+                                  textTransform: "uppercase",
+                                }}
+                              >
+                                {line.brand}
+                              </Text>
+                            )}
+                            <Text
+                              numberOfLines={2}
+                              style={{
+                                fontFamily: tokens.font.family.display,
+                                fontSize: 14,
+                                fontWeight: "600",
+                                color: tokens.color.ink[900],
+                                lineHeight: 18,
+                                letterSpacing: -0.2,
+                              }}
+                            >
+                              {line.name}
+                            </Text>
+                            <Text
+                              style={{
+                                marginTop: 2,
+                                fontFamily: tokens.font.family.mono,
+                                fontSize: 11,
+                                color: tokens.color.ink[500],
+                              }}
+                            >
+                              {formatINR(line.unitPrice)} / {line.unit.toLowerCase()}
+                            </Text>
+                          </View>
+                          <Pressable onPress={() => remove(line.productId)} hitSlop={8}>
+                            <Trash size={16} color={tokens.color.ink[400]} />
+                          </Pressable>
+                        </View>
+                        <View
                           style={{
-                            fontSize: 16,
-                            fontFamily: "Poppins",
-                            fontWeight: "700",
-                            color: tokens.color.text.dark,
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            marginTop: 10,
                           }}
                         >
-                          {formatINR(line.qty * line.unitPrice)}
-                        </Text>
+                          <QtyStepper
+                            value={line.qty}
+                            onChange={(q) => setQty(line.productId, q)}
+                            size="sm"
+                          />
+                          <Text
+                            style={{
+                              fontFamily: tokens.font.family.display,
+                              fontSize: 16,
+                              fontWeight: "700",
+                              color: tokens.color.ink[900],
+                              letterSpacing: -0.4,
+                            }}
+                          >
+                            {formatINR(line.qty * line.unitPrice)}
+                          </Text>
+                        </View>
                       </View>
                     </View>
-                  </View>
-                </Card>
-              ))}
+                  </Card>
+                ))}
+              </View>
 
-              {/* Price details */}
-              <Card>
+              {/* Price breakdown */}
+              <Card padded={16}>
                 <Text
                   style={{
-                    fontFamily: "Poppins",
+                    fontFamily: tokens.font.family.body,
+                    fontSize: 11,
                     fontWeight: "600",
-                    fontSize: 16,
-                    color: tokens.color.text.dark,
+                    color: tokens.color.ink[500],
+                    letterSpacing: 0.6,
+                    textTransform: "uppercase",
                     marginBottom: 12,
                   }}
                 >
-                  Price Details
+                  Order summary
                 </Text>
                 <View style={{ gap: 8 }}>
-                  <Row label="Total MRP" value={formatINR(subtotal + youSave)} />
-                  <Row label="Delivery Charges" value={formatINR(deliveryCharge)} />
+                  <Row label="Item subtotal" value={formatINR(subtotal + youSave)} />
+                  <Row label="Delivery" value={formatINR(deliveryCharge)} />
                   <Row
-                    label="You Save"
-                    value={`- ${formatINR(youSave)}`}
+                    label="Discount"
+                    value={`− ${formatINR(youSave)}`}
                     valueColor={tokens.color.state.successText}
                   />
                 </View>
@@ -210,30 +222,65 @@ export default function CartScreen() {
                     marginTop: 12,
                     paddingTop: 12,
                     borderTopWidth: 1,
-                    borderTopColor: tokens.color.border.divider,
+                    borderTopColor: tokens.color.border.hairline,
                     flexDirection: "row",
                     justifyContent: "space-between",
+                    alignItems: "center",
                   }}
                 >
                   <Text
                     style={{
-                      fontFamily: "Poppins",
-                      fontWeight: "600",
+                      fontFamily: tokens.font.family.display,
+                      fontWeight: "700",
                       fontSize: 16,
-                      color: tokens.color.text.dark,
+                      color: tokens.color.ink[900],
+                      letterSpacing: -0.3,
                     }}
                   >
-                    To Pay
+                    Total
                   </Text>
                   <Text
                     style={{
-                      fontFamily: "Poppins",
+                      fontFamily: tokens.font.family.display,
                       fontWeight: "700",
-                      fontSize: 16,
-                      color: tokens.color.text.dark,
+                      fontSize: 22,
+                      color: tokens.color.ink[900],
+                      letterSpacing: -0.6,
                     }}
                   >
                     {formatINR(toPay)}
+                  </Text>
+                </View>
+
+                <View
+                  style={{
+                    marginTop: 12,
+                    paddingHorizontal: 12,
+                    paddingVertical: 10,
+                    borderRadius: 10,
+                    backgroundColor: tokens.color.bgKpi.green,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 6,
+                  }}
+                >
+                  <View
+                    style={{
+                      width: 6,
+                      height: 6,
+                      borderRadius: 3,
+                      backgroundColor: tokens.color.state.success,
+                    }}
+                  />
+                  <Text
+                    style={{
+                      fontFamily: tokens.font.family.body,
+                      fontSize: 12,
+                      color: tokens.color.state.successText,
+                      fontWeight: "500",
+                    }}
+                  >
+                    You're saving {formatINR(youSave)} on this order
                   </Text>
                 </View>
               </Card>
@@ -246,16 +293,19 @@ export default function CartScreen() {
                 left: 0,
                 right: 0,
                 bottom: 0,
-                backgroundColor: "#fff",
-                padding: 20,
+                backgroundColor: "rgba(255,255,255,0.97)",
+                paddingHorizontal: 20,
+                paddingTop: 14,
+                paddingBottom: 28,
                 borderTopWidth: 1,
-                borderTopColor: tokens.color.border.divider,
+                borderTopColor: tokens.color.border.hairline,
               }}
             >
               <Button
-                label="Proceed to Checkout"
+                label={`Checkout · ${formatINR(toPay)}`}
                 onPress={() => router.push("/(customer)/book/address")}
                 surface="customer"
+                iconRight={<ArrowRight size={18} color="#fff" />}
               />
             </View>
           </>
@@ -271,12 +321,21 @@ const Row: React.FC<{ label: string; value: string; valueColor?: string }> = ({
   valueColor,
 }) => (
   <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-    <Text style={{ fontFamily: "Poppins", fontSize: 14, color: tokens.color.text.dark }}>{label}</Text>
     <Text
       style={{
-        fontFamily: "Poppins",
-        fontSize: 14,
-        color: valueColor ?? tokens.color.text.dark,
+        fontFamily: tokens.font.family.body,
+        fontSize: 13,
+        color: tokens.color.ink[600],
+      }}
+    >
+      {label}
+    </Text>
+    <Text
+      style={{
+        fontFamily: tokens.font.family.mono,
+        fontSize: 13,
+        fontWeight: "600",
+        color: valueColor ?? tokens.color.ink[900],
       }}
     >
       {value}

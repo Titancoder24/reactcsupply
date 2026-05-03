@@ -1,70 +1,141 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { tokens } from "@/theme/tokens";
-import { Button, CSupplyLogo } from "@/components/ui";
-import { Truck } from "@/components/ui/Icon";
+import { Button, Card, CSupplyLogo, CSupplyMark } from "@/components/ui";
+import { Truck, Check, ArrowRight } from "@/components/ui/Icon";
+
+const HIGHLIGHTS = [
+  "Get matched to nearby pickup jobs",
+  "Weekly payouts straight to your bank",
+  "Call masking protects your number",
+  "Live navigation built into the app",
+];
 
 export default function TransporterWelcome() {
   const router = useRouter();
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#fff" }}>
+    <View style={{ flex: 1, backgroundColor: tokens.color.surface.page }}>
       <SafeAreaView style={{ flex: 1 }} edges={["top", "bottom"]}>
-        <View style={{ flex: 1, padding: 24, alignItems: "center", justifyContent: "center", gap: 16 }}>
-          <View
-            style={{
-              width: 96,
-              height: 96,
-              borderRadius: 48,
-              backgroundColor: tokens.color.brand.green50,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Truck size={48} color={tokens.color.brand.green} />
-          </View>
-
-          <CSupplyLogo size="lg" variant="green" />
-
-          <View style={{ alignItems: "center", marginTop: 12, gap: 4 }}>
-            <Text
+        <ScrollView contentContainerStyle={{ padding: 20, gap: 20 }}>
+          <View style={{ alignItems: "center", marginTop: 32, gap: 16 }}>
+            <View
               style={{
-                fontFamily: "Poppins",
-                fontWeight: "600",
-                fontSize: 22,
-                color: tokens.color.text.primary,
+                width: 80,
+                height: 80,
+                borderRadius: 24,
+                backgroundColor: tokens.color.brand.green50,
+                alignItems: "center",
+                justifyContent: "center",
+                borderWidth: 1,
+                borderColor: "rgba(22,163,74,0.2)",
               }}
             >
-              Deliver More
+              <Truck size={40} color={tokens.color.brand.green} />
+            </View>
+            <CSupplyLogo size="md" variant="green" />
+          </View>
+
+          <View style={{ alignItems: "center", marginTop: 8, gap: 8 }}>
+            <View
+              style={{
+                paddingHorizontal: 12,
+                paddingVertical: 6,
+                borderRadius: 999,
+                backgroundColor: tokens.color.brand.green50,
+                borderWidth: 1,
+                borderColor: "rgba(22,163,74,0.2)",
+              }}
+            >
+              <Text
+                style={{
+                  fontFamily: tokens.font.family.body,
+                  fontSize: 11,
+                  fontWeight: "600",
+                  color: tokens.color.brand.green600,
+                  letterSpacing: 0.4,
+                  textTransform: "uppercase",
+                }}
+              >
+                Transporter Program
+              </Text>
+            </View>
+            <Text
+              style={{
+                fontFamily: tokens.font.family.display,
+                fontWeight: "700",
+                fontSize: 28,
+                color: tokens.color.ink[900],
+                letterSpacing: -0.8,
+                textAlign: "center",
+                lineHeight: 34,
+              }}
+            >
+              Deliver more.{"\n"}
+              <Text style={{ color: tokens.color.brand.green }}>Earn more.</Text>
             </Text>
             <Text
               style={{
-                fontFamily: "Poppins",
-                fontWeight: "600",
-                fontSize: 22,
-                color: tokens.color.text.primary,
+                fontFamily: tokens.font.family.body,
+                fontSize: 14,
+                color: tokens.color.ink[500],
+                textAlign: "center",
+                lineHeight: 20,
+                maxWidth: 360,
               }}
             >
-              Earn More
+              Join the largest fleet of construction-material movers in India.
             </Text>
           </View>
 
-          <View style={{ width: "100%", gap: 12, marginTop: 24 }}>
+          <Card padded={20}>
+            <View style={{ gap: 12 }}>
+              {HIGHLIGHTS.map((h) => (
+                <View key={h} style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+                  <View
+                    style={{
+                      width: 22,
+                      height: 22,
+                      borderRadius: 11,
+                      backgroundColor: tokens.color.brand.green50,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Check size={12} color={tokens.color.brand.green} strokeWidth={3} />
+                  </View>
+                  <Text
+                    style={{
+                      flex: 1,
+                      fontFamily: tokens.font.family.body,
+                      fontSize: 13,
+                      color: tokens.color.ink[700],
+                    }}
+                  >
+                    {h}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          </Card>
+
+          <View style={{ gap: 10, marginTop: 8 }}>
             <Button
-              label="Join Now"
+              label="Join now"
               onPress={() => router.push("/(transporter)/signup/mobile")}
               surface="transporter"
+              iconRight={<ArrowRight size={18} color="#fff" />}
             />
             <Button
-              label="Already have an account? Login"
+              label="I already have an account"
               variant="secondary"
               onPress={() => router.push("/auth/login")}
               surface="transporter"
             />
           </View>
-        </View>
+        </ScrollView>
       </SafeAreaView>
     </View>
   );

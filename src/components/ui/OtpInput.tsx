@@ -8,6 +8,7 @@ interface OtpInputProps {
   value: string;
   onChange: (value: string) => void;
   surface?: "customer" | "vendor" | "transporter";
+  cellSize?: number;
 }
 
 export const OtpInput: React.FC<OtpInputProps> = ({
@@ -15,6 +16,7 @@ export const OtpInput: React.FC<OtpInputProps> = ({
   value,
   onChange,
   surface = "customer",
+  cellSize = 52,
 }) => {
   const refs = useRef<TextInput[]>([]);
   const accent =
@@ -38,34 +40,37 @@ export const OtpInput: React.FC<OtpInputProps> = ({
   };
 
   return (
-    <View style={{ flexDirection: "row", justifyContent: "center", gap: 12 }}>
-      {Array.from({ length }).map((_, idx) => (
-        <TextInput
-          key={idx}
-          ref={(el) => {
-            if (el) refs.current[idx] = el;
-          }}
-          value={value[idx] ?? ""}
-          onChangeText={(t) => handleChange(idx, t)}
-          onKeyPress={(e) => handleKeyPress(idx, (e.nativeEvent as any).key)}
-          keyboardType="number-pad"
-          maxLength={1}
-          style={{
-            width: 56,
-            height: 56,
-            borderRadius: 8,
-            borderWidth: value[idx] ? 1.5 : 1,
-            borderColor: value[idx] ? accent : tokens.color.border.input,
-            textAlign: "center",
-            fontSize: 22,
-            fontFamily: "Poppins",
-            fontWeight: "700",
-            color: tokens.color.text.dark,
-            backgroundColor: "#fff",
-            ...noOutline,
-          }}
-        />
-      ))}
+    <View style={{ flexDirection: "row", justifyContent: "center", gap: 10 }}>
+      {Array.from({ length }).map((_, idx) => {
+        const filled = !!value[idx];
+        return (
+          <TextInput
+            key={idx}
+            ref={(el) => {
+              if (el) refs.current[idx] = el;
+            }}
+            value={value[idx] ?? ""}
+            onChangeText={(t) => handleChange(idx, t)}
+            onKeyPress={(e) => handleKeyPress(idx, (e.nativeEvent as any).key)}
+            keyboardType="number-pad"
+            maxLength={1}
+            style={{
+              width: cellSize,
+              height: cellSize,
+              borderRadius: 12,
+              borderWidth: filled ? 1.5 : 1,
+              borderColor: filled ? accent : tokens.color.border.input,
+              textAlign: "center",
+              fontSize: 22,
+              fontFamily: tokens.font.family.display,
+              fontWeight: "700",
+              color: tokens.color.ink[900],
+              backgroundColor: filled ? tokens.color.surface.white : tokens.color.ink[50],
+              ...noOutline,
+            }}
+          />
+        );
+      })}
     </View>
   );
 };

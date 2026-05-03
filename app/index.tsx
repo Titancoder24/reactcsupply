@@ -1,165 +1,86 @@
 import React from "react";
-import { View, Text, ImageBackground, Pressable, ScrollView, Platform } from "react-native";
+import { View, Text, ScrollView, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+import Svg, { Defs, LinearGradient, Stop, Rect, Circle, Path } from "react-native-svg";
 import { tokens } from "@/theme/tokens";
-import { Button, CSupplyLogo, CSupplyMark } from "@/components/ui";
+import { Button, CSupplyLogo, CSupplyMark, StatusPill } from "@/components/ui";
+import { ArrowRight } from "@/components/ui/Icon";
 
-const ConstructionScene = () => (
-  <View style={{ height: 280, justifyContent: "flex-end", alignItems: "center" }}>
-    {/* Stylized cityscape silhouette with cranes */}
-    <View
-      style={{
-        position: "absolute",
-        bottom: 0,
-        left: 0,
-        right: 0,
-        height: 200,
-        opacity: 0.3,
-      }}
-    >
-      {/* Crane 1 */}
-      <View
-        style={{
-          position: "absolute",
-          left: "10%",
-          bottom: 40,
-          width: 4,
-          height: 140,
-          backgroundColor: tokens.color.customer.accent,
-        }}
-      />
-      <View
-        style={{
-          position: "absolute",
-          left: "10%",
-          bottom: 170,
-          width: 90,
-          height: 3,
-          backgroundColor: tokens.color.customer.accent,
-        }}
-      />
-      {/* Crane 2 */}
-      <View
-        style={{
-          position: "absolute",
-          right: "15%",
-          bottom: 60,
-          width: 4,
-          height: 120,
-          backgroundColor: "#FBBF24",
-        }}
-      />
-      <View
-        style={{
-          position: "absolute",
-          right: "15%",
-          bottom: 170,
-          width: 70,
-          height: 3,
-          backgroundColor: "#FBBF24",
-        }}
-      />
-      {/* Buildings silhouettes */}
-      {[
-        { left: "5%", w: 60, h: 80 },
-        { left: "20%", w: 50, h: 100 },
-        { left: "35%", w: 80, h: 120 },
-        { left: "55%", w: 60, h: 90 },
-        { left: "70%", w: 70, h: 110 },
-        { left: "85%", w: 50, h: 70 },
-      ].map((b, i) => (
-        <View
-          key={i}
-          style={{
-            position: "absolute",
-            left: b.left as any,
-            bottom: 0,
-            width: b.w,
-            height: b.h,
-            backgroundColor: "rgba(255,255,255,0.15)",
-            borderTopLeftRadius: 2,
-            borderTopRightRadius: 2,
-          }}
+const HeroBackdrop = () => (
+  <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}>
+    <Svg width="100%" height="100%" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice">
+      <Defs>
+        <LinearGradient id="bg" x1="0" y1="0" x2="400" y2="800">
+          <Stop offset="0" stopColor="#0F2340" />
+          <Stop offset="0.5" stopColor="#0B3B6E" />
+          <Stop offset="1" stopColor="#082A53" />
+        </LinearGradient>
+        <LinearGradient id="glow" x1="0" y1="0" x2="0" y2="1">
+          <Stop offset="0" stopColor="#F97316" stopOpacity="0.18" />
+          <Stop offset="1" stopColor="#F97316" stopOpacity="0" />
+        </LinearGradient>
+      </Defs>
+      <Rect x={0} y={0} width={400} height={800} fill="url(#bg)" />
+      {/* Soft accent glow */}
+      <Circle cx={320} cy={120} r={180} fill="url(#glow)" />
+      {/* Subtle grid lines */}
+      {Array.from({ length: 20 }).map((_, i) => (
+        <Path
+          key={`l${i}`}
+          d={`M0 ${40 * (i + 1)} L400 ${40 * (i + 1)}`}
+          stroke="rgba(255,255,255,0.025)"
+          strokeWidth={1}
         />
       ))}
-    </View>
+      {Array.from({ length: 10 }).map((_, i) => (
+        <Path
+          key={`v${i}`}
+          d={`M${40 * (i + 1)} 0 L${40 * (i + 1)} 800`}
+          stroke="rgba(255,255,255,0.025)"
+          strokeWidth={1}
+        />
+      ))}
+    </Svg>
+  </View>
+);
 
-    {/* Truck + materials in foreground */}
-    <View
+const StatBadge: React.FC<{ value: string; label: string }> = ({ value, label }) => (
+  <View
+    style={{
+      flex: 1,
+      paddingVertical: 14,
+      paddingHorizontal: 14,
+      borderRadius: 14,
+      borderWidth: 1,
+      borderColor: "rgba(255,255,255,0.12)",
+      backgroundColor: "rgba(255,255,255,0.04)",
+    }}
+  >
+    <Text
       style={{
-        position: "absolute",
-        bottom: 24,
-        left: 24,
-        right: 24,
-        flexDirection: "row",
-        alignItems: "flex-end",
-        justifyContent: "space-between",
+        fontFamily: tokens.font.family.display,
+        fontSize: 22,
+        fontWeight: "700",
+        color: "#fff",
+        letterSpacing: -0.6,
       }}
     >
-      {/* Brick stack */}
-      <View style={{ width: 36, height: 28 }}>
-        {[0, 1, 2].map((row) =>
-          [0, 1, 2].map((col) => (
-            <View
-              key={`${row}-${col}`}
-              style={{
-                position: "absolute",
-                left: col * 12 + (row % 2 === 1 ? 4 : 0),
-                bottom: row * 9,
-                width: 11,
-                height: 8,
-                backgroundColor: "#DC2626",
-                borderRadius: 1,
-              }}
-            />
-          )),
-        )}
-      </View>
-
-      {/* Truck body */}
-      <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
-        <View
-          style={{
-            width: 70,
-            height: 42,
-            backgroundColor: "#fff",
-            borderTopLeftRadius: 8,
-            borderTopRightRadius: 4,
-          }}
-        />
-        <View
-          style={{
-            width: 36,
-            height: 30,
-            backgroundColor: "#1E40AF",
-            borderTopLeftRadius: 4,
-            borderBottomLeftRadius: 0,
-          }}
-        />
-      </View>
-
-      {/* Cement bags */}
-      <View>
-        <View
-          style={{
-            width: 44,
-            height: 24,
-            backgroundColor: "#94A3B8",
-            borderRadius: 2,
-            marginBottom: 2,
-          }}
-        />
-        <View
-          style={{
-            width: 44,
-            height: 24,
-            backgroundColor: "#94A3B8",
-            borderRadius: 2,
-          }}
-        />
-      </View>
-    </View>
+      {value}
+    </Text>
+    <Text
+      style={{
+        marginTop: 2,
+        fontFamily: tokens.font.family.body,
+        fontSize: 11,
+        fontWeight: "500",
+        color: "rgba(255,255,255,0.6)",
+        letterSpacing: 0.5,
+        textTransform: "uppercase",
+      }}
+    >
+      {label}
+    </Text>
   </View>
 );
 
@@ -167,85 +88,240 @@ export default function SplashScreen() {
   const router = useRouter();
 
   return (
-    <View style={{ flex: 1, backgroundColor: tokens.color.customer.primary }}>
+    <View style={{ flex: 1, backgroundColor: "#0B3B6E" }}>
+      <HeroBackdrop />
       <SafeAreaView style={{ flex: 1 }} edges={["top", "bottom"]}>
         <ScrollView
           contentContainerStyle={{
             flexGrow: 1,
-            justifyContent: "space-between",
-            paddingHorizontal: 20,
-            paddingTop: 32,
+            paddingHorizontal: 24,
+            paddingTop: 24,
             paddingBottom: 24,
+            gap: 24,
           }}
         >
-          {/* Top brand block */}
-          <View style={{ alignItems: "center", marginTop: 40 }}>
-            <CSupplyMark size={120} variant="white" />
-            <View style={{ height: 24 }} />
-            <CSupplyLogo size="xl" variant="white" showTagline />
-          </View>
-
-          {/* Construction scene */}
-          <ConstructionScene />
-
-          {/* CTAs */}
-          <View style={{ gap: 12, marginTop: 16 }}>
-            <Button
-              label="Get Started"
-              onPress={() => router.push("/auth/login")}
-              variant="primary"
-              surface="customer"
-            />
+          {/* Top bar */}
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+              <CSupplyMark size={32} variant="white" />
+              <CSupplyLogo size="sm" variant="white" />
+            </View>
             <Pressable
               onPress={() => router.push("/auth/login")}
               style={({ pressed }) => ({
-                height: 52,
-                borderRadius: 12,
-                borderWidth: 1.5,
-                borderColor: "#fff",
-                alignItems: "center",
-                justifyContent: "center",
+                paddingHorizontal: 14,
+                paddingVertical: 8,
+                borderRadius: 999,
+                borderWidth: 1,
+                borderColor: "rgba(255,255,255,0.2)",
                 backgroundColor: pressed ? "rgba(255,255,255,0.08)" : "transparent",
               })}
             >
               <Text
                 style={{
                   color: "#fff",
-                  fontSize: 16,
-                  fontFamily: "Poppins",
-                  fontWeight: "600",
+                  fontFamily: tokens.font.family.body,
+                  fontSize: 13,
+                  fontWeight: "500",
                 }}
               >
-                Login / Sign Up
+                Sign in
               </Text>
             </Pressable>
+          </View>
 
-            {/* Quick role-switch hints (web demo navigation) */}
-            <View style={{ flexDirection: "row", justifyContent: "center", gap: 16, marginTop: 12 }}>
-              <Pressable onPress={() => router.push("/(customer)/home")}>
-                <Text style={{ color: "rgba(255,255,255,0.7)", fontSize: 12, fontFamily: "Poppins" }}>
-                  Customer
+          {/* Hero */}
+          <View style={{ marginTop: 32, gap: 16 }}>
+            <View
+              style={{
+                alignSelf: "flex-start",
+                paddingHorizontal: 12,
+                paddingVertical: 6,
+                borderRadius: 999,
+                backgroundColor: "rgba(249,115,22,0.16)",
+                borderWidth: 1,
+                borderColor: "rgba(249,115,22,0.3)",
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 6,
+              }}
+            >
+              <View
+                style={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: 999,
+                  backgroundColor: tokens.color.customer.accent,
+                }}
+              />
+              <Text
+                style={{
+                  fontFamily: tokens.font.family.body,
+                  fontSize: 12,
+                  fontWeight: "600",
+                  color: "#FED7AA",
+                  letterSpacing: 0.4,
+                }}
+              >
+                Now serving 6 cities across India
+              </Text>
+            </View>
+
+            <Text
+              style={{
+                fontFamily: tokens.font.family.display,
+                fontSize: 40,
+                fontWeight: "800",
+                color: "#fff",
+                lineHeight: 46,
+                letterSpacing: -1.4,
+              }}
+            >
+              Construction{"\n"}materials,{" "}
+              <Text style={{ color: tokens.color.customer.accent }}>delivered</Text>.
+            </Text>
+
+            <Text
+              style={{
+                fontFamily: tokens.font.family.body,
+                fontSize: 15,
+                color: "rgba(255,255,255,0.7)",
+                lineHeight: 22,
+                maxWidth: 340,
+              }}
+            >
+              Cement, steel, sand, bricks and aggregates from verified vendors. Live tracking,
+              transparent pricing, scheduled delivery to your site.
+            </Text>
+          </View>
+
+          {/* Stat row */}
+          <View style={{ flexDirection: "row", gap: 10 }}>
+            <StatBadge value="2,400+" label="Verified vendors" />
+            <StatBadge value="98.4%" label="On-time delivery" />
+            <StatBadge value="14k+" label="Sites served" />
+          </View>
+
+          <View style={{ flex: 1 }} />
+
+          {/* CTAs */}
+          <View style={{ gap: 10 }}>
+            <Button
+              label="Get started"
+              onPress={() => router.push("/auth/login")}
+              variant="primary"
+              surface="customer"
+              iconRight={<ArrowRight size={18} color="#fff" />}
+            />
+
+            <View style={{ flexDirection: "row", gap: 10 }}>
+              <Pressable
+                onPress={() => router.push("/(customer)/home")}
+                style={({ pressed }) => ({
+                  flex: 1,
+                  height: 48,
+                  borderRadius: 14,
+                  borderWidth: 1,
+                  borderColor: "rgba(255,255,255,0.18)",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: pressed ? "rgba(255,255,255,0.06)" : "transparent",
+                })}
+              >
+                <Text
+                  style={{
+                    color: "#fff",
+                    fontFamily: tokens.font.family.body,
+                    fontWeight: "500",
+                    fontSize: 14,
+                  }}
+                >
+                  Browse catalog
                 </Text>
               </Pressable>
-              <Text style={{ color: "rgba(255,255,255,0.4)" }}>·</Text>
-              <Pressable onPress={() => router.push("/(vendor)/signup")}>
-                <Text style={{ color: "rgba(255,255,255,0.7)", fontSize: 12, fontFamily: "Poppins" }}>
-                  Vendor
-                </Text>
-              </Pressable>
-              <Text style={{ color: "rgba(255,255,255,0.4)" }}>·</Text>
-              <Pressable onPress={() => router.push("/(transporter)/signup")}>
-                <Text style={{ color: "rgba(255,255,255,0.7)", fontSize: 12, fontFamily: "Poppins" }}>
-                  Transporter
-                </Text>
-              </Pressable>
-              <Text style={{ color: "rgba(255,255,255,0.4)" }}>·</Text>
-              <Pressable onPress={() => router.push("/(admin)/login")}>
-                <Text style={{ color: "rgba(255,255,255,0.7)", fontSize: 12, fontFamily: "Poppins" }}>
-                  Admin
+              <Pressable
+                onPress={() => router.push("/(vendor)/signup")}
+                style={({ pressed }) => ({
+                  flex: 1,
+                  height: 48,
+                  borderRadius: 14,
+                  borderWidth: 1,
+                  borderColor: "rgba(255,255,255,0.18)",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: pressed ? "rgba(255,255,255,0.06)" : "transparent",
+                })}
+              >
+                <Text
+                  style={{
+                    color: "#fff",
+                    fontFamily: tokens.font.family.body,
+                    fontWeight: "500",
+                    fontSize: 14,
+                  }}
+                >
+                  Become a partner
                 </Text>
               </Pressable>
             </View>
+          </View>
+
+          {/* Role quick-switch */}
+          <View
+            style={{
+              paddingTop: 12,
+              flexDirection: "row",
+              flexWrap: "wrap",
+              justifyContent: "center",
+              gap: 8,
+            }}
+          >
+            <Text
+              style={{
+                color: "rgba(255,255,255,0.45)",
+                fontFamily: tokens.font.family.body,
+                fontSize: 11,
+                letterSpacing: 0.6,
+                textTransform: "uppercase",
+                marginRight: 6,
+              }}
+            >
+              Demo
+            </Text>
+            {[
+              { label: "Customer", route: "/(customer)/home" },
+              { label: "Vendor", route: "/(vendor)/dashboard" },
+              { label: "Transporter", route: "/(transporter)/dashboard" },
+              { label: "Admin", route: "/(admin)/login" },
+            ].map((d) => (
+              <Pressable
+                key={d.label}
+                onPress={() => router.push(d.route as any)}
+                style={({ pressed }) => ({
+                  paddingHorizontal: 10,
+                  paddingVertical: 4,
+                  borderRadius: 999,
+                  backgroundColor: pressed ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0.05)",
+                })}
+              >
+                <Text
+                  style={{
+                    color: "rgba(255,255,255,0.75)",
+                    fontFamily: tokens.font.family.body,
+                    fontSize: 11,
+                    fontWeight: "500",
+                  }}
+                >
+                  {d.label}
+                </Text>
+              </Pressable>
+            ))}
           </View>
         </ScrollView>
       </SafeAreaView>

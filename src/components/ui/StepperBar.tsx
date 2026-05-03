@@ -6,52 +6,57 @@ interface StepperBarProps {
   current: number;
   total: number;
   surface?: "customer" | "vendor" | "transporter";
+  label?: string;
 }
 
 export const StepperBar: React.FC<StepperBarProps> = ({
   current,
   total,
   surface = "vendor",
+  label,
 }) => {
   const fillColor =
     surface === "customer" ? tokens.color.customer.accent : tokens.color.brand.green;
   const pct = Math.max(0, Math.min(1, current / total));
 
   return (
-    <View style={{ paddingHorizontal: 20, paddingVertical: 12 }}>
+    <View style={{ paddingHorizontal: 20, paddingVertical: 14, backgroundColor: tokens.color.surface.white, borderBottomWidth: 1, borderBottomColor: tokens.color.border.hairline }}>
       <View
         style={{
           flexDirection: "row",
           justifyContent: "space-between",
-          marginBottom: 6,
+          alignItems: "center",
+          marginBottom: 8,
         }}
       >
         <Text
           style={{
-            fontSize: 12,
-            fontFamily: "Poppins",
-            fontWeight: "500",
-            color: tokens.color.text.secondary,
+            fontSize: 11,
+            fontFamily: tokens.font.family.body,
+            fontWeight: "600",
+            color: tokens.color.ink[500],
+            letterSpacing: 0.6,
+            textTransform: "uppercase",
           }}
         >
-          Step {current} of {total}
+          {label ?? `Step ${current} of ${total}`}
         </Text>
         <Text
           style={{
             fontSize: 12,
-            fontFamily: "Poppins",
-            fontWeight: "500",
-            color: tokens.color.text.secondary,
+            fontFamily: tokens.font.family.mono,
+            fontWeight: "600",
+            color: tokens.color.ink[700],
           }}
         >
-          {current}/{total}
+          {String(current).padStart(2, "0")} / {String(total).padStart(2, "0")}
         </Text>
       </View>
       <View
         style={{
           height: 4,
           borderRadius: 2,
-          backgroundColor: "#E5E7EB",
+          backgroundColor: tokens.color.ink[100],
           overflow: "hidden",
         }}
       >
@@ -60,6 +65,7 @@ export const StepperBar: React.FC<StepperBarProps> = ({
             width: `${pct * 100}%`,
             height: "100%",
             backgroundColor: fillColor,
+            borderRadius: 2,
           }}
         />
       </View>
