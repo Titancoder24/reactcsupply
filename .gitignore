@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+.expo/
+.next/
+dist/
+web-build/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Native
+ios/
+android/
+*.orig.*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+*.log
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Testing / coverage
+coverage/
+
+# Build artifacts
+.tsbuildinfo
+
+# Temporary
+.tmp/
+tmp/
